@@ -1,7 +1,7 @@
 import type { RouteRecordStringComponent } from '@vben/types';
 
 import { requestClient } from '#/api/request';
-import type { IpubPageDto } from '..';
+import type { IpubPageDto, IpubResultDto } from '..';
 
 /**
  * 菜单类型枚举
@@ -18,7 +18,7 @@ export interface ISearchMenuDto extends IpubPageDto {
   /**
    * 菜单名字  模糊查询
    */
-  name?: string,
+  menuName?: string,
   /**
    * 菜单类型
    */
@@ -56,7 +56,7 @@ export async function getAllMenusApi() {
  * 获取系统菜单加搜索功能 分页
  */
 export async function getMenuList(data: ISearchMenuDto) {
-  return requestClient.post<Array<IMenuDto>>(`${prixf}/getMenuList`, data);
+  return requestClient.post<IpubResultDto<IMenuDto>>(`${prixf}/getMenuList`, data);
 }
 
 /**

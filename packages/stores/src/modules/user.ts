@@ -1,5 +1,4 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-
 interface BasicUserInfo {
   /**
    * 头像
@@ -46,7 +45,7 @@ export const useUserStore = defineStore('core-user', {
     setUserId(userId: number | string) {
       this.userId = userId;
     },
-    setUserInfo(userInfo: BasicUserInfo | null) {
+    setUserInfo(userInfo: BasicUserInfo  | null ) {
       // 设置用户信息
       this.userInfo = userInfo;
       // 设置角色信息

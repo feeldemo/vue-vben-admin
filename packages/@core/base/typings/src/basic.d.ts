@@ -20,8 +20,6 @@ interface BasicUserInfo {
    * 用户角色
    */
   roles?: string[];
-
-  tag?: string;
   /**
    * 用户id
    */

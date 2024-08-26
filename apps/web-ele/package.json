@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@iconify/icons-mdi": "^1.2.48",
     "@types/node": "^22.4.1",
     "@vben/access": "workspace:*",
     "@vben/chart-ui": "workspace:*",
@@ -45,6 +46,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "element-plus": "^2.8.1",
+    "lucide-vue-next": "^0.435.0",
     "pinia": "2.2.2",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3"

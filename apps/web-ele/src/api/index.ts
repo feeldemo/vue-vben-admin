@@ -6,4 +6,8 @@ export interface IpubPageDto {
   size: number
 }
 
+export interface IpubResultDto<T>{
+  count: number,
+  list: Array<T>
+}
 export * from './core';
