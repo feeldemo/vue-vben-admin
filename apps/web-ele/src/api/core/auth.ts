@@ -9,10 +9,10 @@ export namespace AuthApi {
 
   /** 登录接口返回值 */
   export interface LoginResult {
-    accessToken: string;
+    sessionToken: string;
     desc: string;
     realName: string;
-    userId: string;
+    userId: number | string;
     username: string;
   }
 
@@ -26,7 +26,7 @@ export namespace AuthApi {
  * 登录
  */
 export async function loginApi(data: AuthApi.LoginParams) {
-  return requestClient.post<AuthApi.LoginResult>('/auth/login', data);
+  return requestClient.post<AuthApi.LoginResult>('/login', data);
 }
 
 /**
@@ -49,5 +49,5 @@ export async function logoutApi() {
  * 获取用户权限码
  */
 export async function getAccessCodesApi() {
-  return requestClient.get<string[]>('/auth/codes');
+  return requestClient.post<string[]>('/getPermCode');
 }

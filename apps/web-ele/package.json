@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@types/node": "^22.4.1",
     "@vben/access": "workspace:*",
     "@vben/chart-ui": "workspace:*",
     "@vben/common-ui": "workspace:*",
@@ -41,6 +42,7 @@
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
     "@vueuse/core": "^11.0.1",
+    "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "element-plus": "^2.8.1",
     "pinia": "2.2.2",

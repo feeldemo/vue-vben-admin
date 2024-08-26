@@ -195,6 +195,9 @@ importers:
 
   apps/web-ele:
     dependencies:
+      '@types/node':
+        specifier: ^22.4.1
+        version: 22.5.0
       '@vben/access':
         specifier: workspace:*
         version: link:../../packages/effects/access
@@ -240,6 +243,9 @@ importers:
       '@vueuse/core':
         specifier: ^11.0.1
         version: 11.0.1(vue@3.4.38(typescript@5.5.4))
+      crypto-js:
+        specifier: ^4.2.0
+        version: 4.2.0
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -3438,6 +3444,7 @@ packages:
 
   '@ls-lint/ls-lint@2.2.3':
     resolution: {integrity: sha512-ekM12jNm/7O2I/hsRv9HvYkRdfrHpiV1epVuI2NP+eTIcEgdIdKkKCs9KgQydu/8R5YXTov9aHdOgplmCHLupw==}
+    cpu: [x64, arm64, s390x]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -5196,6 +5203,9 @@ packages:
     peerDependenciesMeta:
       uWebSockets.js:
         optional: true
+
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
 
   crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
@@ -13047,7 +13057,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 18.19.45
+      '@types/node': 22.5.0
 
   '@types/hast@3.0.4':
     dependencies:
@@ -13069,7 +13079,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 18.19.45
+      '@types/node': 22.5.0
 
   '@types/jsonwebtoken@9.0.6':
     dependencies:
@@ -14421,6 +14431,8 @@ snapshots:
       which: 2.0.2
 
   crossws@0.2.4: {}
+
+  crypto-js@4.2.0: {}
 
   crypto-random-string@2.0.0: {}
 

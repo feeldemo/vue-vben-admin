@@ -1,6 +1,6 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@vben/tsconfig/web-app.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

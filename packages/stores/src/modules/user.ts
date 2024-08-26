@@ -13,10 +13,12 @@ interface BasicUserInfo {
    * 用户角色
    */
   roles?: string[];
+
+  tag: string;
   /**
    * 用户id
    */
-  userId: string;
+  userId: number | string;
   /**
    * 用户名
    */
@@ -24,10 +26,12 @@ interface BasicUserInfo {
 }
 
 interface AccessState {
+  userId: null | number | string;
   /**
    * 用户信息
    */
   userInfo: BasicUserInfo | null;
+
   /**
    * 用户角色
    */
@@ -39,6 +43,9 @@ interface AccessState {
  */
 export const useUserStore = defineStore('core-user', {
   actions: {
+    setUserId(userId: number | string) {
+      this.userId = userId;
+    },
     setUserInfo(userInfo: BasicUserInfo | null) {
       // 设置用户信息
       this.userInfo = userInfo;
@@ -50,7 +57,11 @@ export const useUserStore = defineStore('core-user', {
       this.userRoles = roles;
     },
   },
+  persist: {
+    paths: ['userId'],
+  },
   state: (): AccessState => ({
+    userId: null,
     userInfo: null,
     userRoles: [],
   }),

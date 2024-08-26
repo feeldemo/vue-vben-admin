@@ -6,13 +6,15 @@ import { preferences } from '@vben/preferences';
 import {
   authenticateResponseInterceptor,
   errorMessageResponseInterceptor,
+  type InternalAxiosRequestConfig,
   RequestClient,
 } from '@vben/request';
-import { useAccessStore } from '@vben/stores';
+import { useAccessStore, useUserStore } from '@vben/stores';
 
 import { ElMessage } from 'element-plus';
 
 import { useAuthStore } from '#/store';
+import { removeEmptyKeys, signature } from '#/util/sign-verification';
 
 import { refreshTokenApi } from './core';
 
@@ -63,6 +65,11 @@ function createRequestClient(baseURL: string) {
 
       config.headers.Authorization = formatToken(accessStore.accessToken);
       config.headers['Accept-Language'] = preferences.app.locale;
+      // 构建通用参数在前
+      makeRequestComParams(config);
+      // 构建签名在后
+      makeRequestSign(config);
+
       return config;
     },
   });
@@ -73,8 +80,16 @@ function createRequestClient(baseURL: string) {
       const { data: responseData, status } = response;
 
       const { code, data, message: msg } = responseData;
-      if (status >= 200 && status < 400 && code === 0) {
+      if (status >= 200 && status < 400 && (code === 200 || code === 0)) {
         return data;
+      }
+      switch (code) {
+        case 401: {
+          break;
+        }
+        default: {
+          break;
+        }
       }
       throw new Error(`Error ${status}: ${msg}`);
     },
@@ -97,6 +112,47 @@ function createRequestClient(baseURL: string) {
   );
 
   return client;
+}
+
+/**
+ *  构建签名
+ * @param config
+ */
+function makeRequestSign(config: InternalAxiosRequestConfig<any>) {
+  const signBody = config.data ?? config.params;
+  const sign = signature(signBody);
+  config.method?.toLocaleUpperCase() === `POST`
+    ? (config.data = Object.assign(config.data || {}, { sign }))
+    : (config.params = Object.assign(config.params || {}, { sign }));
+}
+
+/**
+ * 构建通用参数
+ * @param config
+ */
+function makeRequestComParams(config: InternalAxiosRequestConfig<any>) {
+  const userStore = useUserStore();
+  const accessStore = useAccessStore();
+  const userId = userStore.userId;
+  const sessionToken = accessStore.accessToken;
+  const timestamp = Date.now();
+
+  const commonParams = {
+    sessionToken,
+    timestamp,
+    userId,
+  };
+
+  const method = config.method?.toLocaleUpperCase();
+  if (method === `POST`) {
+    config.data = removeEmptyKeys(
+      Object.assign(config.data || {}, commonParams),
+    );
+  } else if (method === `GET`) {
+    config.params = removeEmptyKeys(
+      Object.assign(config.params || {}, commonParams),
+    );
+  }
 }
 
 export const requestClient = createRequestClient(apiURL);

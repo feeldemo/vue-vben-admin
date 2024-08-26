@@ -112,9 +112,9 @@ function handleMakeAll() {
       <UserDropdown
         :avatar
         :menus
+        :tag-text="userStore.userInfo?.tag"
         :text="userStore.userInfo?.realName"
-        description="ann.vben@gmail.com"
-        tag-text="Pro"
+        description="feeldemo@163.com"
         @logout="handleLogout"
       />
     </template>

@@ -3,6 +3,25 @@
     "demos": {
       "title": "演示",
       "element-plus": "Element Plus"
+    },
+    "sys":{
+      "title":"系统管理",
+      "menu": "菜单管理",
+      "index":{
+        "search":{
+          "menu":{
+            "name":"菜单名字",
+            "placeholder": "请输入菜单名字"
+          },
+          "type":{
+            "name":"菜单类型",
+            "placeholder": "请选择菜单类型"
+          }
+        }
+      }
+    },
+    "devices":{
+      "title":"设备管理"
     }
   }
 }
