@@ -107,10 +107,6 @@ const handleCurrentChange = (val: number) => {
         element-loading-text="Loading..."
         border
       >
-        <ElTableColumn prop="icon" label="菜单图标"  width="100px">
-          <template #default="scope">
-          </template>
-        </ElTableColumn>
         <ElTableColumn prop="menuName" label="菜单名字" width="120px" />
         <ElTableColumn prop="type" label="菜单类型" width="100px" >
           <template #default="scope">
@@ -120,6 +116,11 @@ const handleCurrentChange = (val: number) => {
         <ElTableColumn prop="name" label="Name" />
         <ElTableColumn prop="title" label="国际化代码" />
         <ElTableColumn prop="component" label="路由地址" />
+        <ElTableColumn prop="status" label="状态" width="100px" >
+          <template #default="scope">
+            <ElTag type="success">{{ scope.row.status == 0? '启用':'禁用' }}</ElTag>
+          </template>
+        </ElTableColumn>
         <ElTableColumn prop="createAt" label="创建时间" />
         <ElTableColumn fixed="right" label="操作" min-width="70px">
           <template #default>
