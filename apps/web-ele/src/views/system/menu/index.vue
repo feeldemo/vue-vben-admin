@@ -1,71 +1,158 @@
 <script lang="ts" setup>
+import { reactive, ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
 import {
   ElButton,
   ElCard,
+  ElDrawer,
   ElForm,
   ElFormItem,
   ElInput,
+  ElMessageBox,
   ElOption,
   ElPagination,
   ElSelect,
   ElTable,
   ElTableColumn,
   ElTag,
-  type FormInstance
+  type ComponentSize,
+  type DrawerProps,
+  type FormInstance,
+  type FormRules,
 } from 'element-plus';
-import { reactive, ref } from 'vue';
-import { $t } from '@vben/locales';
-import {getMenuList, type IMenuDto, type ISearchMenuDto} from "#/api";
-const background = ref(false)
-const disabled = ref(false)
-let total = ref(0);
-const loading = ref(true)
-defineOptions(
-  { 
-    name: 'MenuManagement'
-  });
 
-const formRef = ref<FormInstance>()
+import {
+  getMenuList,
+  type IMenuDto,
+  type ISearchMenuDto,
+} from '#/api';
+defineOptions({ name: 'MenuManagement' });
+
+const background = ref(false);
+const disabled = ref(false);
+
+const total = ref(0);
+const loading = ref(true);
+
+const formRef = ref<FormInstance>();
+
+/** searchbody */
 const searchBody = reactive({
   menuName: undefined,
-  type: undefined,
   page: 1,
-  size: 10
-} as ISearchMenuDto)
+  size: 10,
+  type: undefined,
+} as ISearchMenuDto);
 
-
-let tableData = ref<Array<IMenuDto>>([]);
+/** data array */
+const tableData = ref<Array<IMenuDto>>([]);
 
 /**
  * 获取数据事件
- * */
+ */
 async function fetchData() {
   loading.value = true;
-  const res = await getMenuList(searchBody)
-  tableData.value = res.list
+  const res = await getMenuList(searchBody);
+  tableData.value = res.list;
   total.value = res.count;
-  loading.value= false
+  loading.value = false;
 }
 
-fetchData()
+fetchData();
+
 function onSubmit() {
-  fetchData()
+  fetchData();
 }
 
 const resetForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  formEl.resetFields();
+};
+const handleSizeChange = (val: number) => {
+  searchBody.size = val;
+  fetchData();
+};
+const handleCurrentChange = (val: number) => {
+  searchBody.page = val;
+  fetchData();
+};
+
+/**
+ * ElDrawer info
+ * update or info or create
+ */
+
+const drawerRef = ref(false);
+const titleRef = ref('');
+const tempMenuRef = ref<FormInstance>();
+const direction = ref<DrawerProps['direction']>('rtl'); // open way
+const formSize = ref<ComponentSize>('default');
+
+const handleClose = (done: () => void) => {
+  ElMessageBox.confirm('Are you sure you want to close this?')
+    .then(() => {
+      done();
+    })
+    .catch(() => {
+      // catch error
+    });
+};
+
+interface RuleForm {
+  id: number;
+  name: string;
+  type: number;
+  icon: string;
+  path: string;
+  component: string;
+}
+
+const ruleForm = reactive<RuleForm>({
+  id: 0,
+  name: '',
+  type: 0,
+  icon: '',
+  path: '',
+  component: '',
+});
+
+const rules = reactive<FormRules<RuleForm>>({
+  name: [{ required: true, message: '请输入菜单名字', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择菜单类型', trigger: 'change' }],
+});
+
+
+
+/**
+ * open click
+ * @param drawerTitle
+ * @param menu
+ */
+function openDrawer(drawerTitle: string, menu?: IMenuDto) {
+  titleRef.value = drawerTitle;
+  drawerRef.value = true;
+  ruleForm.id = menu ? menu.id : 0;
+}
+
+const submitForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      console.log('submit!')
+    } else {
+      console.log('error submit!', fields)
+    }
+  })
+}
+
+const resetForm1 = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
 }
-const handleSizeChange = (val: number) => {
-  searchBody.size = val;
-  fetchData()
-}
-const handleCurrentChange = (val: number) => {
-  searchBody.page = val;
-  fetchData()
-}
+
 </script>
 
 <template>
@@ -79,7 +166,10 @@ const handleCurrentChange = (val: number) => {
             clearable
           />
         </ElFormItem>
-        <ElFormItem :label="$t(`page.sys.index.search.type.name`)" style="width: 200px">
+        <ElFormItem
+          :label="$t(`page.sys.index.search.type.name`)"
+          style="width: 200px"
+        >
           <ElSelect
             v-model="searchBody.type"
             :placeholder="$t(`page.sys.index.search.type.placeholder`)"
@@ -97,54 +187,116 @@ const handleCurrentChange = (val: number) => {
     </ElCard>
     <ElCard>
       <span>
-        <ElButton  type="primary" size="small" @click="" style="width: 100px; height: 35px;margin-top:-15px; margin-bottom: 15px ">新增</ElButton>
+        <ElButton
+          size="small"
+          style="
+            width: 100px;
+            height: 35px;
+            margin-top: -15px;
+            margin-bottom: 15px;
+          "
+          type="primary"
+          @click="openDrawer(`新增`)"
+          >新增</ElButton
+        >
       </span>
       <ElTable
+        :border="true"
         :data="tableData"
-        style="width: 100%; margin-bottom: 10px"
         row-key="id"
-        :v-loading="loading"
-        element-loading-text="Loading..."
-        border
+        style="width: 100%; margin-bottom: 10px"
       >
-        <ElTableColumn prop="menuName" label="菜单名字" width="120px" />
-        <ElTableColumn prop="type" label="菜单类型" width="100px" >
+        <ElTableColumn label="菜单名字" prop="menuName" width="120px" />
+        <ElTableColumn label="菜单类型" prop="type" width="100px">
           <template #default="scope">
-            <ElTag type="primary">{{scope.row.type == 0? '菜单':'按钮'}}</ElTag>
+            <ElTag type="primary">
+              {{ scope.row.type === 0 ? '菜单' : '按钮' }}
+            </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn prop="name" label="Name" />
-        <ElTableColumn prop="title" label="国际化代码" />
-        <ElTableColumn prop="component" label="路由地址" />
-        <ElTableColumn prop="status" label="状态" width="100px" >
+        <ElTableColumn label="Name" prop="name" />
+        <ElTableColumn label="国际化代码" prop="title" />
+        <ElTableColumn label="路由地址" prop="component" />
+        <ElTableColumn label="状态" prop="status" width="100px">
           <template #default="scope">
-            <ElTag type="success">{{ scope.row.status == 0? '启用':'禁用' }}</ElTag>
+            <ElTag type="success">
+              {{ scope.row.status === 0 ? '启用' : '禁用' }}
+            </ElTag>
           </template>
         </ElTableColumn>
-        <ElTableColumn prop="createAt" label="创建时间" />
+        <ElTableColumn label="创建时间" prop="createAt" />
         <ElTableColumn fixed="right" label="操作" min-width="70px">
-          <template #default>
-            <ElButton  type="primary" size="small" @click="">详情</ElButton>
-            <ElButton  type="warning" size="small">修改</ElButton>
-            <ElButton  type="danger" size="small">删除</ElButton>
+          <template #default="scope">
+            <ElButton
+              size="small"
+              type="primary"
+              @click="openDrawer(`详情`, scope.row)"
+              >详情</ElButton
+            >
+            <ElButton
+              size="small"
+              type="warning"
+              @click="openDrawer(`修改`, scope.row)"
+              >修改</ElButton
+            >
+            <ElButton size="small" type="danger">删除</ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
     </ElCard>
-
     <ElCard style="margin-top: 10px">
       <ElPagination
-        style="float: right; margin-bottom: 15px"
         v-model:current-page="searchBody.page"
         v-model:page-size="searchBody.size"
-        :page-sizes="[5, 10, 20, 50]"
-        :disabled="disabled"
         :background="background"
-        layout="sizes, prev, pager, next"
+        :disabled="disabled"
+        :page-sizes="[5, 10, 20, 50]"
         :total="total"
-        @size-change="handleSizeChange"
+        layout="sizes, prev, pager, next"
+        style="float: right; margin-bottom: 15px"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </ElCard>
+
+    <ElDrawer
+      v-model="drawerRef"
+      :title="titleRef"
+      :direction="direction"
+      :before-close="handleClose"
+    >
+      <ElForm
+        ref="tempMenuRef"
+        style="max-width: 600px"
+        :model="ruleForm"
+        :rules="rules"
+        label-width="auto"
+        class="demo-ruleForm"
+        :size="formSize"
+        status-icon
+      >
+        <ElFormItem label="菜单名字" prop="name">
+          <el-input v-model="ruleForm.name" />
+        </ElFormItem>
+        <ElFormItem label="菜单类型" prop="region">
+          <ElSelect v-model="ruleForm.type" placeholder="请选择菜单类型">
+            <ElOption label="菜单" value=0 />
+            <ElOption label="按钮" value=1 />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem label="菜单图标" prop="icon">
+          <ElSelect v-model="ruleForm.icon" placeholder="请选择菜单图标">
+            <ElOption label="菜单" value="0" />
+            <ElOption label="按钮" value="1" />
+          </ElSelect>
+        </ElFormItem>
+        <ElFormItem>
+          <ElButton type="primary" @click="submitForm(tempMenuRef)">
+            Create
+          </ElButton>
+          <ElButton @click="resetForm1(tempMenuRef)">Reset</ElButton>
+        </ElFormItem>
+      </ElForm>
+    </ElDrawer>
   </Page>
 </template>
