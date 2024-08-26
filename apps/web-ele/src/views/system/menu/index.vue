@@ -109,7 +109,6 @@ const handleCurrentChange = (val: number) => {
       >
         <ElTableColumn prop="icon" label="菜单图标"  width="100px">
           <template #default="scope">
-            <Icon :name="scope.row.icon"></Icon>
           </template>
         </ElTableColumn>
         <ElTableColumn prop="menuName" label="菜单名字" width="120px" />
