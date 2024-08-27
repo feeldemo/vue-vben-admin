@@ -78,13 +78,13 @@ function createRequestClient(baseURL: string) {
   client.addResponseInterceptor({
     fulfilled: (response) => {
       const { data: responseData, status } = response;
-
       const { code, data, message: msg } = responseData;
       if (status >= 200 && status < 400 && (code === 200 || code === 0)) {
         return data;
       }
       switch (code) {
-        case 401: {
+        case 2001: {
+          doReAuthenticate()
           break;
         }
         default: {
