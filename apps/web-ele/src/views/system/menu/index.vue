@@ -5,23 +5,8 @@ import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import {
-  ElButton,
-  ElCard,
-  ElCascader,
-  ElDrawer,
-  ElForm,
-  ElFormItem,
-  ElInput,
-  ElInputNumber,
   ElMessageBox,
   ElNotification,
-  ElOption,
-  ElPagination,
-  ElSelect,
-  ElSwitch,
-  ElTable,
-  ElTableColumn,
-  ElTag,
   type CascaderOption,
   type ComponentSize,
   type DrawerProps,
@@ -112,6 +97,7 @@ const tempMenuRef = ref<FormInstance>();
 const direction = ref<DrawerProps['direction']>('rtl'); // open way
 const formSize = ref<ComponentSize>('default');
 const formDisabled = ref(false);
+
 let ruleForm = reactive<RuleForm>({
   id: 0,
   menuName: '',
@@ -221,7 +207,6 @@ const statusChange = async (val: string | number | boolean, id: number) => {
 
       showNotification(result, result === '修改成功' ? 'success' : 'error');
       await fetchData(); // 假设 fetchData 是从服务器重新获取数据的函数  
-
     }
   } catch (error) {
     // 处理错误，例如显示错误通知
