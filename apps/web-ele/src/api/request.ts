@@ -145,6 +145,7 @@ function makeRequestComParams(config: InternalAxiosRequestConfig<any>) {
 
   const method = config.method?.toLocaleUpperCase();
   if (method === `POST`) {
+    debugger
     config.data = removeEmptyKeys(
       Object.assign(config.data || {}, commonParams),
     );

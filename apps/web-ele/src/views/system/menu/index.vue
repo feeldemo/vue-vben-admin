@@ -15,9 +15,12 @@ import {
 } from 'element-plus';
 
 import {
+  createMenu,
   getMenuList,
   getTreeMenu,
+  modifyMenu,
   modifyMenuStatus,
+  deleteMenu,
   type IMenuDto,
   type ISearchMenuDto,
 } from '#/api';
@@ -86,14 +89,14 @@ interface RuleForm {
   icon?: string;
   path: string;
   component?: string;
-  parentId?: number;
+  parentId: number;
   status: number,
   order: number,
 }
 
 const drawerRef = ref(false);
 const titleRef = ref('');
-const tempMenuRef = ref<FormInstance>();
+let tempMenuRef = ref<FormInstance>();
 const direction = ref<DrawerProps['direction']>('rtl'); // open way
 const formSize = ref<ComponentSize>('default');
 const formDisabled = ref(false);
@@ -108,14 +111,33 @@ let ruleForm = reactive<RuleForm>({
   path: '',
   component: '',
   parentId: 0,
-  status: 0,
+  status: 1,
   order: 0
 });
+
+
+function resetRuleForm(value?: IMenuDto) {
+  ruleForm.id = value ? value.id : 0;
+  ruleForm.menuName = value ? value.menuName : ``;
+  ruleForm.title = value ? value.title : ``;
+  ruleForm.name = value ? value.name : ``;
+  ruleForm.type = value ? value.type : 1;
+  ruleForm.icon = value ? value.icon : ``;
+  ruleForm.path = value ? value.path : ``;
+  ruleForm.component = value ? value.component : ``;
+  ruleForm.parentId = value ? value.parentId : 0;
+  ruleForm.status = value ? value.status : 0;;
+  ruleForm.order = value ? value.order : 99;
+}
 
 const handleClose = (done: () => void) => {
   ElMessageBox.confirm('您确认要关闭吗?')
     .then(() => {
-      ruleForm = { type: 1, parentId: 0 } as any;
+      resetRuleForm()
+      if (tempMenuRef) {
+        tempMenuRef.value?.resetFields();
+      }
+      formDisabled.value = false
       done();
     })
     .catch(() => {
@@ -123,19 +145,19 @@ const handleClose = (done: () => void) => {
     });
 };
 
-let parentOptions: Array<CascaderOption> = [];
+let parentOptions: Array<CascaderOption> = [{ id: 0, label: `一级菜单`, value: 0, children: [] }];
+
 async function getParentOptions() {
   const data = await getTreeMenu() as Array<any>;
-  parentOptions = data.map(v => {
+  parentOptions = parentOptions.concat(data.map(v => {
     return {
       id: v.id,
       label: v.label,
       value: v.value,
       children: v.children
-    } as any
-  });
+    }
+  }));
 }
-
 getParentOptions()
 
 
@@ -156,7 +178,7 @@ function openDrawer(drawerTitle: string, menu?: IMenuDto) {
   titleRef.value = drawerTitle;
   drawerRef.value = true;
   if (menu) {
-    ruleForm = menu;
+    resetRuleForm(menu)
   }
   if (drawerTitle === `详情`) {
     formDisabled.value = true
@@ -167,14 +189,28 @@ function openDrawer(drawerTitle: string, menu?: IMenuDto) {
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
-    if (valid) {
-      console.log('submit!')
-    } else {
-      console.log('error submit!', fields)
-    }
-  })
+  const val = await formEl.validate();
+  if (!val) {
+    return;
+  }
+  if (titleRef.value == `修改`) {
+    await modifyMenu(ruleForm);
+  } else if (titleRef.value == `新增`) {
+    await createMenu(ruleForm);
+  }
+  ElNotification.success(`${titleRef.value} 成功!`)
+  drawerRef.value = false;
+  await fetchData()
 }
+
+const deleteClick = async (id: number) => {
+  debugger
+  if (!id) return
+  await deleteMenu(id);
+  ElNotification.success(`删除成功!`)
+  await fetchData()
+}
+
 
 const resetForm1 = (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -232,6 +268,12 @@ const statusChange = async (val: string | number | boolean, id: number) => {
             <ElOption label="按钮" value="2" />
           </ElSelect>
         </ElFormItem>
+        <ElFormItem :label="$t(`page.sys.index.search.status.name`)" style="width: 200px">
+          <ElSelect v-model="searchBody.type" :placeholder="$t(`page.sys.index.search.status.placeholder`)" clearable>
+            <ElOption label="菜单" value="1" />
+            <ElOption label="按钮" value="2" />
+          </ElSelect>
+        </ElFormItem>
         <ElFormItem style="float: right">
           <ElButton type="primary" @click="onSubmit">搜索</ElButton>
           <ElButton @click="resetForm(formRef)">重置</ElButton>
@@ -273,7 +315,7 @@ const statusChange = async (val: string | number | boolean, id: number) => {
           <template #default="scope">
             <ElButton size="small" type="primary" @click="openDrawer(`详情`, scope.row)">详情</ElButton>
             <ElButton size="small" type="warning" @click="openDrawer(`修改`, scope.row)">修改</ElButton>
-            <ElButton size="small" type="danger">删除</ElButton>
+            <ElButton size="small" type="danger" @click="deleteClick(scope.row.id)">删除</ElButton>
           </template>
         </ElTableColumn>
       </ElTable>
@@ -303,7 +345,7 @@ const statusChange = async (val: string | number | boolean, id: number) => {
             <ElOption label="按钮" :value=2 />
           </ElSelect>
         </ElFormItem>
-        <ElFormItem v-if="ruleForm.parentId !== 0" label="上级菜单" prop="parentId">
+        <ElFormItem label="上级菜单" prop="parentId">
           <ElCascader :options="parentOptions" :props="props1" clearable v-model="ruleForm.parentId" />
         </ElFormItem>
         <ElFormItem label="路由地址" prop="component">

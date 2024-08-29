@@ -16,6 +16,10 @@
           "type":{
             "name":"菜单类型",
             "placeholder": "请选择菜单类型"
+          },
+          "status":{
+            "name":"菜单状态",
+            "placeholder": "请选择菜单状态"
           }
         }
       },

@@ -36,7 +36,7 @@ export interface IModifyMenuDto extends IMenuDto {
  */
 export interface IMenuDto {
   id: number,
-  menuName:string,
+  menuName: string,
   name: string,
   title: string,
   type: EMenuType | number,
@@ -45,10 +45,11 @@ export interface IMenuDto {
   component?: string,
   status: number,
   order: number,
-  children: Array<IMenuDto>
+  parentId: number,
+  children?: Array<IMenuDto>
 }
 
-export interface IMenuModifyStatusDto  {
+export interface IMenuModifyStatusDto {
   id: number,
   status: number
 }
@@ -91,7 +92,7 @@ export async function modifyMenu(data: IModifyMenuDto) {
  * @returns 
  */
 export async function deleteMenu(id: number) {
-  return requestClient.post(`${prixf}/deleteMenu`, id);
+  return requestClient.post(`${prixf}/deleteMenu`, id );
 }
 
 
