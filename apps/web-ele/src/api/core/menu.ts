@@ -1,7 +1,7 @@
 import type { RouteRecordStringComponent } from '@vben/types';
 
 import { requestClient } from '#/api/request';
-import type { IpubPageDto, IpubResultDto } from '..';
+import type { IPubPageDto, IPubResultDto } from '..';
 
 /**
  * 菜单类型枚举
@@ -14,7 +14,7 @@ export enum EMenuType {
 /**
  * 菜单管理查询DTO
  */
-export interface ISearchMenuDto extends IpubPageDto {
+export interface ISearchMenuDto extends IPubPageDto {
   /**
    * 菜单名字  模糊查询
    */
@@ -23,6 +23,8 @@ export interface ISearchMenuDto extends IpubPageDto {
    * 菜单类型
    */
   type?: EMenuType,
+
+  status?: number
 }
 /**
  * 修改menu DTO 
@@ -67,7 +69,7 @@ export async function getAllMenusApi() {
  * 获取系统菜单加搜索功能 分页
  */
 export async function getMenuList(data: ISearchMenuDto) {
-  return requestClient.post<IpubResultDto<IMenuDto>>(`${prixf}/getMenuList`, data);
+  return requestClient.post<IPubResultDto<IMenuDto>>(`${prixf}/getMenuList`, data);
 }
 
 /**
@@ -92,7 +94,7 @@ export async function modifyMenu(data: IModifyMenuDto) {
  * @returns 
  */
 export async function deleteMenu(id: number) {
-  return requestClient.post(`${prixf}/deleteMenu`, id );
+  return requestClient.post(`${prixf}/deleteMenu`, { id });
 }
 
 

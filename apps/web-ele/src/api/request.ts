@@ -87,11 +87,16 @@ function createRequestClient(baseURL: string) {
           doReAuthenticate()
           break;
         }
+        case 2000: {
+          ElMessage.error(msg)
+          break;
+        }
         default: {
           break;
         }
+     
       }
-      throw new Error(`Error ${status}: ${msg}`);
+      throw new Error(`Error ${code}: ${msg}`);
     },
   });
 
@@ -108,7 +113,9 @@ function createRequestClient(baseURL: string) {
 
   // 通用的错误处理,如果没有进入上面的错误处理逻辑，就会进入这里
   client.addResponseInterceptor(
-    errorMessageResponseInterceptor((msg: string) => ElMessage.error(msg)),
+    errorMessageResponseInterceptor((msg: string) => {
+      ElMessage.error(msg)
+    }),
   );
 
   return client;
@@ -145,7 +152,6 @@ function makeRequestComParams(config: InternalAxiosRequestConfig<any>) {
 
   const method = config.method?.toLocaleUpperCase();
   if (method === `POST`) {
-    debugger
     config.data = removeEmptyKeys(
       Object.assign(config.data || {}, commonParams),
     );

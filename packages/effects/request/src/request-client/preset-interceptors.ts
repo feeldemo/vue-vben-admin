@@ -92,6 +92,7 @@ export const errorMessageResponseInterceptor = (
       }
 
       let errorMessage = error?.response?.data?.error?.message ?? '';
+      debugger
       const status = error?.response?.status;
 
       switch (status) {

@@ -1,12 +1,12 @@
 /**
  * 通用查询分页DTO
  */
-export interface IpubPageDto {
+export interface IPubPageDto {
   page: number,
   size: number
 }
 
-export interface IpubResultDto<T>{
+export interface IPubResultDto<T>{
   count: number,
   list: Array<T>
 }

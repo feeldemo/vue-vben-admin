@@ -40,6 +40,7 @@ const searchBody = reactive({
   page: 1,
   size: 10,
   type: undefined,
+  status: undefined,
 } as ISearchMenuDto);
 
 /** data array */
@@ -126,7 +127,7 @@ function resetRuleForm(value?: IMenuDto) {
   ruleForm.path = value ? value.path : ``;
   ruleForm.component = value ? value.component : ``;
   ruleForm.parentId = value ? value.parentId : 0;
-  ruleForm.status = value ? value.status : 0;;
+  ruleForm.status = value ? value.status : 1;
   ruleForm.order = value ? value.order : 99;
 }
 
@@ -177,9 +178,7 @@ const rules = reactive<FormRules<RuleForm>>({
 function openDrawer(drawerTitle: string, menu?: IMenuDto) {
   titleRef.value = drawerTitle;
   drawerRef.value = true;
-  if (menu) {
-    resetRuleForm(menu)
-  }
+  resetRuleForm(menu)
   if (drawerTitle === `详情`) {
     formDisabled.value = true
   } else {
@@ -204,11 +203,22 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 }
 
 const deleteClick = async (id: number) => {
-  debugger
-  if (!id) return
-  await deleteMenu(id);
-  ElNotification.success(`删除成功!`)
-  await fetchData()
+  try {
+    if (!id) return
+    const confirmed = await ElMessageBox.confirm('您确认要删除该菜单吗?');
+    if (confirmed == `confirm`) {
+      await deleteMenu(id);
+      showNotification(`删除成功!`, `success`)
+    }
+  } catch (error) {
+    // 处理错误，例如显示错误通知
+    if (error == `cancel`) {
+      showNotification(`您取消了删除`, `warning`);
+    }
+  } finally {
+    await fetchData()
+  }
+
 }
 
 
@@ -264,14 +274,14 @@ const statusChange = async (val: string | number | boolean, id: number) => {
         </ElFormItem>
         <ElFormItem :label="$t(`page.sys.index.search.type.name`)" style="width: 200px">
           <ElSelect v-model="searchBody.type" :placeholder="$t(`page.sys.index.search.type.placeholder`)" clearable>
-            <ElOption label="菜单" value="1" />
-            <ElOption label="按钮" value="2" />
+            <ElOption label="菜单" :value=1 />
+            <ElOption label="按钮" :value=2 />
           </ElSelect>
         </ElFormItem>
         <ElFormItem :label="$t(`page.sys.index.search.status.name`)" style="width: 200px">
-          <ElSelect v-model="searchBody.type" :placeholder="$t(`page.sys.index.search.status.placeholder`)" clearable>
-            <ElOption label="菜单" value="1" />
-            <ElOption label="按钮" value="2" />
+          <ElSelect v-model="searchBody.status" :placeholder="$t(`page.sys.index.search.status.placeholder`)" clearable>
+            <ElOption label="启用" :value=1 />
+            <ElOption label="禁用" :value=0 />
           </ElSelect>
         </ElFormItem>
         <ElFormItem style="float: right">
@@ -289,7 +299,7 @@ const statusChange = async (val: string | number | boolean, id: number) => {
             margin-bottom: 15px;
           " type="primary" @click="openDrawer(`新增`)">新增</ElButton>
       </span>
-      <ElTable :border="true" :data="tableData" row-key="id" style="width: 100%; margin-bottom: 10px">
+      <ElTable :border="true" :data="tableData" row-key="id" style="width: 100%; margin-bottom: 10px"  v-loading="loading" >
         <ElTableColumn label="菜单名字" prop="menuName" width="120px" />
         <ElTableColumn label="菜单类型" prop="type" width="100px">
           <template #default="scope">
@@ -331,7 +341,7 @@ const statusChange = async (val: string | number | boolean, id: number) => {
       <ElForm ref="tempMenuRef" style="max-width: 600px" :model="ruleForm" :rules="rules" :disabled="formDisabled"
         label-width="auto" class="demo-ruleForm" :size="formSize" status-icon>
         <ElFormItem label="菜单名字" prop="menuName">
-          <el-input v-model="ruleForm.menuName" placeholder="请选择菜单名字" />
+          <el-input v-model="ruleForm.menuName" placeholder="请输入菜单名字" />
         </ElFormItem>
         <ElFormItem label="router名字" prop="name">
           <el-input v-model="ruleForm.name" placeholder="请选择router名字" />

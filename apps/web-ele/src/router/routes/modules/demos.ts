@@ -21,7 +21,7 @@ const routes: RouteRecordRaw[] = [
         },
         name: 'NaiveDemos',
         path: '/demos/element',
-        component: () => import('#/views/demos/element/index1.vue'),
+        component: () => import('#/views/demos/element/index.vue'),
       },
     ],
   },
