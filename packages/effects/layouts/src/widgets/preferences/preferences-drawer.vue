@@ -156,7 +156,7 @@ const {
   isSideMode,
   isSideNav,
 } = usePreferences();
-const { copy } = useClipboard();
+const { copy } = useClipboard({ legacy: true });
 
 const [Drawer] = useVbenDrawer();
 
@@ -309,8 +309,8 @@ async function handleReset() {
 
             <Block :title="$t('preferences.header.title')">
               <Header
-                v-model:headerEnable="headerEnable"
-                v-model:headerMode="headerMode"
+                v-model:header-enable="headerEnable"
+                v-model:header-mode="headerMode"
                 :disabled="isFullContent"
               />
             </Block>

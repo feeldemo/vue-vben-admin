@@ -1,12 +1,9 @@
 <script lang="ts" setup>
-import type { IBreadcrumb } from './types';
+import type { BreadcrumbProps } from './types';
 
 import { VbenIcon } from '../icon';
 
-interface Props {
-  breadcrumbs: IBreadcrumb[];
-  showIcon?: boolean;
-}
+interface Props extends BreadcrumbProps {}
 
 defineOptions({ name: 'Breadcrumb' });
 withDefaults(defineProps<Props>(), {
@@ -34,7 +31,6 @@ function handleClick(path?: string) {
             <span class="flex-center z-10 h-full">
               <VbenIcon
                 v-if="showIcon"
-                :fallback="showIcon"
                 :icon="item.icon"
                 class="mr-1 size-4 flex-shrink-0"
               />

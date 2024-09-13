@@ -18,7 +18,7 @@ You just need to configure the `props` parameter of `AuthPageLayout` in `src/rou
       pageTitle: "开箱即用的大型中后台管理系统",
       pageDescription: "工程化、高性能、跨组件库的前端模版",
       toolbar: true,
-      toolbarList: () => ['color', 'language', 'layout', 'theme'],
+      toolbarList: ['color', 'language', 'layout', 'theme'],
     }
     // ...
   },
@@ -60,11 +60,6 @@ If you want to adjust the content of the login form, you can configure the `Auth
    * @en Whether it is in loading state
    */
   loading?: boolean;
-
-  /**
-   * @en Password placeholder
-   */
-  passwordPlaceholder?: string;
 
   /**
    * @en QR code login path
@@ -114,11 +109,6 @@ If you want to adjust the content of the login form, you can configure the `Auth
    * @en Login box title
    */
   title?: string;
-
-  /**
-   * @en Username placeholder
-   */
-  usernamePlaceholder?: string;
 }
 ```
 

@@ -11,7 +11,7 @@ import {
   usePreferences,
 } from '@vben/preferences';
 import { useLockStore, useUserStore } from '@vben/stores';
-import { mapTree } from '@vben/utils';
+import { deepToRaw, mapTree } from '@vben/utils';
 import { VbenAdminLayout } from '@vben-core/layout-ui';
 import { Toaster, VbenBackTop, VbenLogo } from '@vben-core/shadcn-ui';
 
@@ -78,7 +78,7 @@ const isMenuRounded = computed(() => {
 });
 
 const logoCollapsed = computed(() => {
-  if (isMobile.value) {
+  if (isMobile.value && sidebarCollapsed.value) {
     return true;
   }
   if (isHeaderNav.value || isMixedNav.value) {
@@ -113,7 +113,7 @@ const {
 
 function wrapperMenus(menus: MenuRecordRaw[]) {
   return mapTree(menus, (item) => {
-    return { ...item, name: $t(item.name) };
+    return { ...deepToRaw(item), name: $t(item.name) };
   });
 }
 
@@ -295,11 +295,8 @@ const headerSlots = computed(() => {
     <template #content>
       <LayoutContent />
     </template>
-    <template
-      v-if="preferences.transition.loading"
-      #content-overlay="{ overlayStyle }"
-    >
-      <LayoutContentSpinner :overlay-style="overlayStyle" />
+    <template v-if="preferences.transition.loading" #content-overlay>
+      <LayoutContentSpinner />
     </template>
 
     <!-- 页脚 -->
