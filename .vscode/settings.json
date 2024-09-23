@@ -222,5 +222,8 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "[vue]": {
     "editor.defaultFormatter": "Vue.volar"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "fabianlauer.vs-code-xml-format"
   }
 }

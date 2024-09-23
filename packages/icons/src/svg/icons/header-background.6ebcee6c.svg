@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1920" height="71" viewBox="0 0 1920 71">
+	<defs>
+		<style>
+			.a{fill:url(#a);}.b{fill:#0c50d9;}.c{fill:url(#b);}.d{fill:none;stroke:#0076fe;stroke-miterlimit:10;stroke-width:4px;}.e{fill:url(#c);}.f{fill:#00fff4;}
+		</style>
+		<linearGradient id="a" x1="0.035" y1="0.5" x2="0.977" y2="0.5" gradientUnits="objectBoundingBox">
+			<stop offset="0" stop-color="#0e5fff" stop-opacity="0.4" />
+			<stop offset="0.847" stop-color="#3d7fff" stop-opacity="0.192" />
+			<stop offset="1" stop-color="#3d7fff" stop-opacity="0.184" />
+		</linearGradient>
+		<linearGradient id="b" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+			<stop offset="0" stop-color="#0e5fff" />
+			<stop offset="1" stop-color="#0e5fff" stop-opacity="0.427" />
+		</linearGradient>
+		<linearGradient id="c" x1="-0.25" y1="0.768" x2="0.952" y2="0.768" gradientUnits="objectBoundingBox">
+			<stop offset="0" stop-color="#0e5fff" stop-opacity="0" />
+			<stop offset="0.367" stop-color="#0e5fff" stop-opacity="0.592" />
+			<stop offset="1" stop-color="#0e5fff" />
+		</linearGradient>
+	</defs>
+	<g transform="translate(0 1)">
+		<path class="a" d="M-605,0l-44.9,70h1322V0Z" transform="translate(1247.895)" />
+		<g transform="translate(595 66)">
+			<rect class="b" width="1322" height="4" transform="translate(3)" />
+		</g>
+		<path class="c" d="M0,0,45,68H489L535,0Z" transform="translate(109)" />
+		<path class="d" d="M0,0H110l44,67H597L642.27,0H1920" transform="translate(0 1)" />
+		<path class="e" d="M0-4H107l41,62.976L0,59Z" transform="translate(0 11)" />
+		<g transform="translate(40 34)">
+			<circle class="f" cx="6" cy="6" r="6" transform="translate(10 -2)" />
+			<circle class="f" cx="6" cy="6" r="6" transform="translate(36 -2)" />
+			<circle class="f" cx="6" cy="6" r="6" transform="translate(-16 -2)" />
+		</g>
+	</g>
+</svg>

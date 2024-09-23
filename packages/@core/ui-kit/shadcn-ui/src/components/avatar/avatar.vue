@@ -42,7 +42,6 @@ const text = computed(() => {
       v-if="dot"
       :class="dotClass"
       class="border-background absolute bottom-0 right-0 size-3 rounded-full border-2"
-    >
-    </span>
+    ></span>
   </div>
 </template>

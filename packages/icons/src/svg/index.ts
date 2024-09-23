@@ -11,7 +11,11 @@ const SvgCardIcon = createIconifyIcon('svg:card');
 const SvgBellIcon = createIconifyIcon('svg:bell');
 const SvgCakeIcon = createIconifyIcon('svg:cake');
 const SvgAntdvLogoIcon = createIconifyIcon('svg:antdv-logo');
-
+const SvgPcs = createIconifyIcon('svg:pcs');
+const SvgPowerStatus = createIconifyIcon('svg:power-status');
+const SvgPowerDui = createIconifyIcon('svg:power-dui');
+const SvgHeaderBackground = createIconifyIcon('svg:header-background.6ebcee6c');
+const SvgAppBackground = createIconifyIcon('svg:app-background-img-6.67a84dcb');
 export {
   SvgAntdvLogoIcon,
   SvgAvatar1Icon,
@@ -22,4 +26,9 @@ export {
   SvgCakeIcon,
   SvgCardIcon,
   SvgDownloadIcon,
+  SvgPcs,
+  SvgPowerStatus,
+  SvgPowerDui,
+  SvgHeaderBackground,
+  SvgAppBackground
 };
