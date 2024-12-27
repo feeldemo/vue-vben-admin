@@ -24,11 +24,11 @@ import {
 } from '@vben/preferences';
 import { useVbenDrawer } from '@vben-core/popup-ui';
 import {
-  useToast,
   VbenButton,
   VbenIconButton,
   VbenSegmented,
 } from '@vben-core/shadcn-ui';
+import { globalShareState } from '@vben-core/shared/global-state';
 
 import { useClipboard } from '@vueuse/core';
 
@@ -54,7 +54,9 @@ import {
 } from './blocks';
 
 const emit = defineEmits<{ clearPreferencesAndLogout: [] }>();
-const { toast } = useToast();
+
+const message = globalShareState.getMessage();
+
 const appLocale = defineModel<SupportedLanguagesType>('appLocale');
 const appDynamicTitle = defineModel<boolean>('appDynamicTitle');
 const appLayout = defineModel<LayoutType>('appLayout');
@@ -85,6 +87,10 @@ const sidebarCollapsed = defineModel<boolean>('sidebarCollapsed');
 const sidebarCollapsedShowTitle = defineModel<boolean>(
   'sidebarCollapsedShowTitle',
 );
+const sidebarAutoActivateChild = defineModel<boolean>(
+  'sidebarAutoActivateChild',
+);
+const SidebarExpandOnHover = defineModel<boolean>('sidebarExpandOnHover');
 
 const headerEnable = defineModel<boolean>('headerEnable');
 const headerMode = defineModel<LayoutHeaderModeType>('headerMode');
@@ -100,10 +106,10 @@ const breadcrumbHideOnlyOne = defineModel<boolean>('breadcrumbHideOnlyOne');
 const tabbarEnable = defineModel<boolean>('tabbarEnable');
 const tabbarShowIcon = defineModel<boolean>('tabbarShowIcon');
 const tabbarShowMore = defineModel<boolean>('tabbarShowMore');
-const tabbarShowRefresh = defineModel<boolean>('tabbarShowRefresh');
 const tabbarShowMaximize = defineModel<boolean>('tabbarShowMaximize');
 const tabbarPersist = defineModel<boolean>('tabbarPersist');
-const tabbarDragable = defineModel<boolean>('tabbarDragable');
+const tabbarDraggable = defineModel<boolean>('tabbarDraggable');
+const tabbarWheelable = defineModel<boolean>('tabbarWheelable');
 const tabbarStyleType = defineModel<string>('tabbarStyleType');
 
 const navigationStyleType = defineModel<NavigationStyleType>(
@@ -117,6 +123,7 @@ const navigationAccordion = defineModel<boolean>('navigationAccordion');
 const footerEnable = defineModel<boolean>('footerEnable');
 const footerFixed = defineModel<boolean>('footerFixed');
 
+const copyrightSettingShow = defineModel<boolean>('copyrightSettingShow');
 const copyrightEnable = defineModel<boolean>('copyrightEnable');
 const copyrightCompanyName = defineModel<string>('copyrightCompanyName');
 const copyrightCompanySiteLink = defineModel<string>(
@@ -145,6 +152,7 @@ const widgetNotification = defineModel<boolean>('widgetNotification');
 const widgetThemeToggle = defineModel<boolean>('widgetThemeToggle');
 const widgetSidebarToggle = defineModel<boolean>('widgetSidebarToggle');
 const widgetLockScreen = defineModel<boolean>('widgetLockScreen');
+const widgetRefresh = defineModel<boolean>('widgetRefresh');
 
 const {
   diffPreference,
@@ -195,10 +203,10 @@ const showBreadcrumbConfig = computed(() => {
 async function handleCopy() {
   await copy(JSON.stringify(diffPreference.value, null, 2));
 
-  toast({
-    description: $t('preferences.copyPreferences'),
-    title: $t('preferences.copyPreferencesSuccess'),
-  });
+  message.copyPreferencesSuccess?.(
+    $t('preferences.copyPreferencesSuccessTitle'),
+    $t('preferences.copyPreferencesSuccess'),
+  );
 }
 
 async function handleClearCache() {
@@ -213,10 +221,6 @@ async function handleReset() {
   }
   resetPreferences();
   await loadLocaleMessages(preferences.app.locale);
-  toast({
-    description: $t('preferences.resetTitle'),
-    title: $t('preferences.resetSuccess'),
-  });
 }
 </script>
 
@@ -299,10 +303,13 @@ async function handleReset() {
 
             <Block :title="$t('preferences.sidebar.title')">
               <Sidebar
+                v-model:sidebar-auto-activate-child="sidebarAutoActivateChild"
                 v-model:sidebar-collapsed="sidebarCollapsed"
                 v-model:sidebar-collapsed-show-title="sidebarCollapsedShowTitle"
                 v-model:sidebar-enable="sidebarEnable"
+                v-model:sidebar-expand-on-hover="SidebarExpandOnHover"
                 v-model:sidebar-width="sidebarWidth"
+                :current-layout="appLayout"
                 :disabled="!isSideMode"
               />
             </Block>
@@ -339,14 +346,14 @@ async function handleReset() {
             </Block>
             <Block :title="$t('preferences.tabbar.title')">
               <Tabbar
-                v-model:tabbar-dragable="tabbarDragable"
+                v-model:tabbar-draggable="tabbarDraggable"
                 v-model:tabbar-enable="tabbarEnable"
                 v-model:tabbar-persist="tabbarPersist"
                 v-model:tabbar-show-icon="tabbarShowIcon"
                 v-model:tabbar-show-maximize="tabbarShowMaximize"
                 v-model:tabbar-show-more="tabbarShowMore"
-                v-model:tabbar-show-refresh="tabbarShowRefresh"
                 v-model:tabbar-style-type="tabbarStyleType"
+                v-model:tabbar-wheelable="tabbarWheelable"
               />
             </Block>
             <Block :title="$t('preferences.widget.title')">
@@ -359,6 +366,7 @@ async function handleReset() {
                 v-model:widget-language-toggle="widgetLanguageToggle"
                 v-model:widget-lock-screen="widgetLockScreen"
                 v-model:widget-notification="widgetNotification"
+                v-model:widget-refresh="widgetRefresh"
                 v-model:widget-sidebar-toggle="widgetSidebarToggle"
                 v-model:widget-theme-toggle="widgetThemeToggle"
               />
@@ -369,7 +377,10 @@ async function handleReset() {
                 v-model:footer-fixed="footerFixed"
               />
             </Block>
-            <Block :title="$t('preferences.copyright.title')">
+            <Block
+              v-if="copyrightSettingShow"
+              :title="$t('preferences.copyright.title')"
+            >
               <Copyright
                 v-model:copyright-company-name="copyrightCompanyName"
                 v-model:copyright-company-site-link="copyrightCompanySiteLink"

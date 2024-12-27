@@ -4,9 +4,14 @@ import type { VbenLayoutProps } from './vben-layout';
 import type { CSSProperties } from 'vue';
 import { computed, ref, watch } from 'vue';
 
-import { SCROLL_FIXED_CLASS } from '@vben-core/composables';
+import {
+  SCROLL_FIXED_CLASS,
+  useLayoutFooterStyle,
+  useLayoutHeaderStyle,
+} from '@vben-core/composables';
 import { Menu } from '@vben-core/icons';
 import { VbenIconButton } from '@vben-core/shadcn-ui';
+import { ELEMENT_ID_MAIN_CONTENT } from '@vben-core/shared/constants';
 
 import { useMouse, useScroll, useThrottleFn } from '@vueuse/core';
 
@@ -73,6 +78,9 @@ const {
   isScrolling,
   y: scrollY,
 } = useScroll(document);
+
+const { setLayoutHeaderHeight } = useLayoutHeaderStyle();
+const { setLayoutFooterHeight } = useLayoutFooterStyle();
 
 const { y: mouseY } = useMouse({ target: contentRef, type: 'client' });
 
@@ -185,7 +193,7 @@ const headerFixed = computed(() => {
 });
 
 const showSidebar = computed(() => {
-  return isSideMode.value && sidebarEnable.value;
+  return isSideMode.value && sidebarEnable.value && !props.sidebarHidden;
 });
 
 /**
@@ -356,6 +364,26 @@ watch(
   },
 );
 
+watch(
+  [() => headerWrapperHeight.value, () => isFullContent.value],
+  ([height]) => {
+    setLayoutHeaderHeight(isFullContent.value ? 0 : height);
+  },
+  {
+    immediate: true,
+  },
+);
+
+watch(
+  () => props.footerHeight,
+  (height: number) => {
+    setLayoutFooterHeight(height);
+  },
+  {
+    immediate: true,
+  },
+);
+
 {
   const mouseMove = () => {
     mouseY.value > headerWrapperHeight.value
@@ -430,6 +458,8 @@ function handleHeaderToggle() {
     emit('toggleSidebar');
   }
 }
+
+const idMainContent = ELEMENT_ID_MAIN_CONTENT;
 </script>
 
 <template>
@@ -506,7 +536,7 @@ function handleHeaderToggle() {
           <template #toggle-button>
             <VbenIconButton
               v-if="showHeaderToggleButton"
-              class="my-0 ml-2 mr-1 rounded-md"
+              class="my-0 mr-1 rounded-md"
               @click="handleHeaderToggle"
             >
               <Menu class="size-4" />
@@ -526,6 +556,7 @@ function handleHeaderToggle() {
 
       <!-- </div> -->
       <LayoutContent
+        :id="idMainContent"
         :content-compact="contentCompact"
         :content-compact-width="contentCompactWidth"
         :padding="contentPadding"

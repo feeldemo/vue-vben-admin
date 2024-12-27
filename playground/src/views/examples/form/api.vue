@@ -1,11 +1,17 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
 
 import { Button, Card, message, Space } from 'ant-design-vue';
 
-import { useVbenForm } from '#/adapter';
+import { useVbenForm } from '#/adapter/form';
+
+const isReverseActionButtons = ref(false);
 
 const [BaseForm, formApi] = useVbenForm({
+  // 翻转操作按钮的位置
+  actionButtonsReverse: isReverseActionButtons.value,
   // 所有表单项共用，可单独在表单内覆盖
   commonConfig: {
     // 所有表单项
@@ -83,6 +89,7 @@ function handleClick(
     | 'labelWidth'
     | 'resetDisabled'
     | 'resetLabelWidth'
+    | 'reverseActionButtons'
     | 'showAction'
     | 'showResetButton'
     | 'showSubmitButton'
@@ -92,6 +99,103 @@ function handleClick(
     | 'updateSubmitButton',
 ) {
   switch (action) {
+    case 'batchAddSchema': {
+      formApi.setState((prev) => {
+        const currentSchema = prev?.schema ?? [];
+        const newSchema = [];
+        for (let i = 0; i < 3; i++) {
+          newSchema.push({
+            component: 'Input',
+            componentProps: {
+              placeholder: '请输入',
+            },
+            fieldName: `field${i}${Date.now()}`,
+            label: `field+`,
+          });
+        }
+        return {
+          schema: [...currentSchema, ...newSchema],
+        };
+      });
+      break;
+    }
+
+    case 'batchDeleteSchema': {
+      formApi.setState((prev) => {
+        const currentSchema = prev?.schema ?? [];
+        return {
+          schema: currentSchema.slice(0, -3),
+        };
+      });
+      break;
+    }
+    case 'disabled': {
+      formApi.setState({ commonConfig: { disabled: true } });
+      break;
+    }
+    case 'hiddenAction': {
+      formApi.setState({ showDefaultActions: false });
+      break;
+    }
+    case 'hiddenResetButton': {
+      formApi.setState({ resetButtonOptions: { show: false } });
+      break;
+    }
+    case 'hiddenSubmitButton': {
+      formApi.setState({ submitButtonOptions: { show: false } });
+      break;
+    }
+    case 'labelWidth': {
+      formApi.setState({
+        commonConfig: {
+          labelWidth: 150,
+        },
+      });
+      break;
+    }
+    case 'resetDisabled': {
+      formApi.setState({ commonConfig: { disabled: false } });
+      break;
+    }
+    case 'resetLabelWidth': {
+      formApi.setState({
+        commonConfig: {
+          labelWidth: 100,
+        },
+      });
+      break;
+    }
+    case 'reverseActionButtons': {
+      isReverseActionButtons.value = !isReverseActionButtons.value;
+      formApi.setState({ actionButtonsReverse: isReverseActionButtons.value });
+      break;
+    }
+    case 'showAction': {
+      formApi.setState({ showDefaultActions: true });
+      break;
+    }
+    case 'showResetButton': {
+      formApi.setState({ resetButtonOptions: { show: true } });
+      break;
+    }
+    case 'showSubmitButton': {
+      formApi.setState({ submitButtonOptions: { show: true } });
+      break;
+    }
+    case 'updateActionAlign': {
+      formApi.setState({
+        // 可以自行调整class
+        actionWrapperClass: 'text-center',
+      });
+      break;
+    }
+
+    case 'updateResetButton': {
+      formApi.setState({
+        resetButtonOptions: { disabled: true },
+      });
+      break;
+    }
     case 'updateSchema': {
       formApi.updateSchema([
         {
@@ -117,100 +221,9 @@ function handleClick(
       message.success('字段 `fieldOptions` 下拉选项更新成功。');
       break;
     }
-
-    case 'labelWidth': {
-      formApi.setState({
-        commonConfig: {
-          labelWidth: 150,
-        },
-      });
-      break;
-    }
-    case 'resetLabelWidth': {
-      formApi.setState({
-        commonConfig: {
-          labelWidth: 100,
-        },
-      });
-      break;
-    }
-    case 'disabled': {
-      formApi.setState({ commonConfig: { disabled: true } });
-      break;
-    }
-    case 'resetDisabled': {
-      formApi.setState({ commonConfig: { disabled: false } });
-      break;
-    }
-    case 'hiddenAction': {
-      formApi.setState({ showDefaultActions: false });
-      break;
-    }
-    case 'showAction': {
-      formApi.setState({ showDefaultActions: true });
-      break;
-    }
-    case 'hiddenResetButton': {
-      formApi.setState({ resetButtonOptions: { show: false } });
-      break;
-    }
-    case 'showResetButton': {
-      formApi.setState({ resetButtonOptions: { show: true } });
-      break;
-    }
-    case 'hiddenSubmitButton': {
-      formApi.setState({ submitButtonOptions: { show: false } });
-      break;
-    }
-    case 'showSubmitButton': {
-      formApi.setState({ submitButtonOptions: { show: true } });
-      break;
-    }
-    case 'updateResetButton': {
-      formApi.setState({
-        resetButtonOptions: { disabled: true },
-      });
-      break;
-    }
     case 'updateSubmitButton': {
       formApi.setState({
         submitButtonOptions: { loading: true },
-      });
-      break;
-    }
-    case 'updateActionAlign': {
-      formApi.setState({
-        // 可以自行调整class
-        actionWrapperClass: 'text-center',
-      });
-      break;
-    }
-    case 'batchAddSchema': {
-      formApi.setState((prev) => {
-        const currentSchema = prev?.schema ?? [];
-        const newSchema = [];
-        for (let i = 0; i < 3; i++) {
-          newSchema.push({
-            component: 'Input',
-            componentProps: {
-              placeholder: '请输入',
-            },
-            fieldName: `field${i}${Date.now()}`,
-            label: `field+`,
-          });
-        }
-        return {
-          schema: [...currentSchema, ...newSchema],
-        };
-      });
-      break;
-    }
-    case 'batchDeleteSchema': {
-      formApi.setState((prev) => {
-        const currentSchema = prev?.schema ?? [];
-        return {
-          schema: currentSchema.slice(0, -3),
-        };
       });
       break;
     }
@@ -226,6 +239,9 @@ function handleClick(
       <Button @click="handleClick('resetLabelWidth')">还原labelWidth</Button>
       <Button @click="handleClick('disabled')">禁用表单</Button>
       <Button @click="handleClick('resetDisabled')">解除禁用</Button>
+      <Button @click="handleClick('reverseActionButtons')">
+        翻转操作按钮位置
+      </Button>
       <Button @click="handleClick('hiddenAction')">隐藏操作按钮</Button>
       <Button @click="handleClick('showAction')">显示操作按钮</Button>
       <Button @click="handleClick('hiddenResetButton')">隐藏重置按钮</Button>

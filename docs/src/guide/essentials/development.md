@@ -75,7 +75,7 @@ npm 脚本是项目常见的配置，用于执行一些常见的任务，比如�
     // 检查类型
     "check:type": "turbo run typecheck",
     // 清理项目（删除node_modules、dist、.turbo）等目录
-    "clean": "vsh clean",
+    "clean": "node ./scripts/clean.mjs",
     // 提交代码
     "commit": "czg",
     // 启动项目（默认会运行整个仓库所有包的dev脚本）
@@ -95,7 +95,7 @@ npm 脚本是项目常见的配置，用于执行一些常见的任务，比如�
     // lint 代码
     "lint": "vsh lint",
     // 依赖安装完成之后，执行所有包的stub脚本
-    "postinstall": "turbo run stub",
+    "postinstall": "pnpm -r run stub --if-present",
     // 只允许使用pnpm
     "preinstall": "npx only-allow pnpm",
     // husky的安装
@@ -149,6 +149,12 @@ pnpm dev:ele
 ```bash
 pnpm dev:docs
 ```
+
+## 公共静态资源
+
+项目中需要使用到的公共静态资源，如：图片、静态HTML等，需要在开发中通过 `src="/xxx.png"` 直接引入的。
+
+需要将资源放在对应项目的 `public/static` 目录下。引入的路径为：`src="/static/xxx.png"`。
 
 ## DevTools
 

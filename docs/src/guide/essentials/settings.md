@@ -164,6 +164,7 @@ import { defineOverridesPreferences } from '@vben/preferences';
 /**
  * @description 项目配置文件
  * 只需要覆盖项目中的一部分配置，不需要的配置不用覆盖，会自动使用默认配置
+ * !!! 更改配置后请清空缓存，否则可能不生效
  */
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
@@ -239,6 +240,7 @@ const defaultPreferences: Preferences = {
     globalSearch: true,
   },
   sidebar: {
+    autoActivateChild: false,
     collapsed: false,
     collapsedShowTitle: false,
     enable: true,
@@ -248,7 +250,7 @@ const defaultPreferences: Preferences = {
     width: 230,
   },
   tabbar: {
-    dragable: true,
+    draggable: true,
     enable: true,
     height: 36,
     keepAlive: true,
@@ -256,7 +258,6 @@ const defaultPreferences: Preferences = {
     showIcon: true,
     showMaximize: true,
     showMore: true,
-    showRefresh: true,
     styleType: 'chrome',
   },
   theme: {
@@ -282,6 +283,7 @@ const defaultPreferences: Preferences = {
     languageToggle: true,
     lockScreen: true,
     notification: true,
+    refresh: true,
     sidebarToggle: true,
     themeToggle: true,
   },
@@ -430,7 +432,7 @@ interface ShortcutKeyPreferences {
 
 interface TabbarPreferences {
   /** 是否开启多标签页拖拽 */
-  dragable: boolean;
+  draggable: boolean;
   /** 是否开启多标签页 */
   enable: boolean;
   /** 标签页高度 */
@@ -445,8 +447,6 @@ interface TabbarPreferences {
   showMaximize: boolean;
   /** 显示更多按钮 */
   showMore: boolean;
-  /** 显示刷新按钮 */
-  showRefresh: boolean;
   /** 标签页风格 */
   styleType: TabsStyleType;
 }
@@ -494,6 +494,8 @@ interface WidgetPreferences {
   lockScreen: boolean;
   /** 是否显示通知部件 */
   notification: boolean;
+  /** 显示刷新按钮 */
+  refresh: boolean;
   /** 是否显示侧边栏显示/隐藏部件 */
   sidebarToggle: boolean;
   /** 是否显示主题切换部件 */
@@ -536,5 +538,4 @@ interface Preferences {
 
 - `overridesPreferences`方法只需要覆盖项目中的一部分配置，不需要的配置不用覆盖，会自动使用默认配置。
 - 任何配置项都可以覆盖，只需要在`overridesPreferences`方法内覆盖即可，不要修改默认配置文件。
-
-:::
+- 更改配置后请清空缓存，否则可能不生效。:::

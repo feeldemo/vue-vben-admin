@@ -3,17 +3,17 @@ import type { MenuRecordRaw } from '@vben/types';
 
 import { computed, useSlots, watch } from 'vue';
 
-import { useWatermark } from '@vben/hooks';
+import { useRefresh } from '@vben/hooks';
 import { $t } from '@vben/locales';
 import {
   preferences,
   updatePreferences,
   usePreferences,
 } from '@vben/preferences';
-import { useLockStore, useUserStore } from '@vben/stores';
-import { deepToRaw, mapTree } from '@vben/utils';
+import { useLockStore } from '@vben/stores';
+import { cloneDeep, mapTree } from '@vben/utils';
 import { VbenAdminLayout } from '@vben-core/layout-ui';
-import { Toaster, VbenBackTop, VbenLogo } from '@vben-core/shadcn-ui';
+import { VbenBackTop, VbenLogo } from '@vben-core/shadcn-ui';
 
 import { Breadcrumb, CheckUpdates, Preferences } from '../widgets';
 import { LayoutContent, LayoutContentSpinner } from './content';
@@ -44,9 +44,8 @@ const {
   sidebarCollapsed,
   theme,
 } = usePreferences();
-const userStore = useUserStore();
-const { updateWatermark } = useWatermark();
 const lockStore = useLockStore();
+const { refresh } = useRefresh();
 
 const sidebarTheme = computed(() => {
   const dark = isDark.value || preferences.theme.semiDarkSidebar;
@@ -104,6 +103,7 @@ const {
 
 const {
   handleMenuSelect,
+  handleMenuOpen,
   headerActive,
   headerMenus,
   sidebarActive,
@@ -111,10 +111,19 @@ const {
   sidebarVisible,
 } = useMixedMenu();
 
-function wrapperMenus(menus: MenuRecordRaw[]) {
-  return mapTree(menus, (item) => {
-    return { ...deepToRaw(item), name: $t(item.name) };
-  });
+/**
+ * 包装菜单，翻译菜单名称
+ * @param menus 原始菜单数据
+ * @param deep 是否深度包装。对于双列布局，只需要包装第一层，因为更深层的数据会在扩展菜单中重新包装
+ */
+function wrapperMenus(menus: MenuRecordRaw[], deep: boolean = true) {
+  return deep
+    ? mapTree(menus, (item) => {
+        return { ...cloneDeep(item), name: $t(item.name) };
+      })
+    : menus.map((item) => {
+        return { ...cloneDeep(item), name: $t(item.name) };
+      });
 }
 
 function toggleSidebar() {
@@ -130,20 +139,6 @@ function clearPreferencesAndLogout() {
 }
 
 watch(
-  () => preferences.app.watermark,
-  async (val) => {
-    if (val) {
-      await updateWatermark({
-        content: `${userStore.userInfo?.username}`,
-      });
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-watch(
   () => preferences.app.layout,
   async (val) => {
     if (val === 'sidebar-mixed-nav' && preferences.sidebar.hidden) {
@@ -155,6 +150,9 @@ watch(
     }
   },
 );
+
+// 语言更新后，刷新页面
+watch(() => preferences.app.locale, refresh, { flush: 'post' });
 
 const slots = useSlots();
 const headerSlots = computed(() => {
@@ -263,14 +261,14 @@ const headerSlots = computed(() => {
         :rounded="isMenuRounded"
         :theme="sidebarTheme"
         mode="vertical"
+        @open="handleMenuOpen"
         @select="handleMenuSelect"
       />
     </template>
     <template #mixed-menu>
-      <!-- :collapse="!preferences.sidebar.collapsedShowTitle" -->
       <LayoutMixedMenu
         :active-path="extraActiveMenu"
-        :menus="wrapperMenus(headerMenus)"
+        :menus="wrapperMenus(headerMenus, false)"
         :rounded="isMenuRounded"
         :theme="sidebarTheme"
         @default-select="handleDefaultSelect"
@@ -308,6 +306,7 @@ const headerSlots = computed(() => {
     <template #content>
       <LayoutContent />
     </template>
+
     <template v-if="preferences.transition.loading" #content-overlay>
       <LayoutContentSpinner />
     </template>
@@ -324,7 +323,6 @@ const headerSlots = computed(() => {
 
     <template #extra>
       <slot name="extra"></slot>
-      <Toaster />
       <CheckUpdates
         v-if="preferences.app.enableCheckUpdates"
         :check-updates-interval="preferences.app.checkUpdatesInterval"

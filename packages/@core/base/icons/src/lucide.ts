@@ -27,6 +27,8 @@ export {
   FoldHorizontal,
   Fullscreen,
   Github,
+  Grip,
+  GripVertical,
   Info,
   InspectionPanel,
   Languages,

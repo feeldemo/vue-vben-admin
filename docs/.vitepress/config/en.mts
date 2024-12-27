@@ -133,12 +133,19 @@ function sidebarCommercial(): DefaultTheme.SidebarItem[] {
 function nav(): DefaultTheme.NavItem[] {
   return [
     {
+      activeMatch: '^/en/(guide|components)/',
       text: 'Doc',
       items: [
         {
+          activeMatch: '^/en/guide/',
           link: '/en/guide/introduction/vben',
           text: 'Guide',
         },
+        // {
+        //   activeMatch: '^/en/components/',
+        //   link: '/en/components/introduction',
+        //   text: 'Components',
+        // },
         {
           text: 'Historical Versions',
           items: [
@@ -214,9 +221,9 @@ function nav(): DefaultTheme.NavItem[] {
       link: '/commercial/community',
       text: '👨‍👦‍👦 Community',
     },
-    {
-      link: '/friend-links/',
-      text: '🤝 Friend Links',
-    },
+    // {
+    //   link: '/friend-links/',
+    //   text: '🤝 Friend Links',
+    // },
   ];
 }

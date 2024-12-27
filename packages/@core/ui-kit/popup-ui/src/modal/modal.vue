@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { ExtendedModalApi, ModalProps } from './modal';
 
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, provide, ref, useId, watch } from 'vue';
 
 import {
   useIsMobile,
@@ -22,6 +22,8 @@ import {
   VbenLoading,
   VisuallyHidden,
 } from '@vben-core/shadcn-ui';
+import { ELEMENT_ID_MAIN_CONTENT } from '@vben-core/shared/constants';
+import { globalShareState } from '@vben-core/shared/global-state';
 import { cn } from '@vben-core/shared/utils';
 
 import { useModalDraggable } from './use-modal-draggable';
@@ -31,8 +33,11 @@ interface Props extends ModalProps {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  appendToMain: false,
   modalApi: undefined,
 });
+
+const components = globalShareState.getComponents();
 
 const contentRef = ref();
 const wrapperRef = ref<HTMLElement>();
@@ -40,17 +45,24 @@ const dialogRef = ref();
 const headerRef = ref();
 const footerRef = ref();
 
+const id = useId();
+
+provide('DISMISSABLE_MODAL_ID', id);
+
 const { $t } = useSimpleLocale();
 const { isMobile } = useIsMobile();
 const state = props.modalApi?.useStore?.();
 
 const {
+  appendToMain,
+  bordered,
   cancelText,
   centered,
   class: modalClass,
   closable,
   closeOnClickModal,
   closeOnPressEscape,
+  confirmDisabled,
   confirmLoading,
   confirmText,
   contentClass,
@@ -69,6 +81,7 @@ const {
   showConfirmButton,
   title,
   titleTooltip,
+  zIndex,
 } = usePriorityValues(props, state);
 
 const shouldFullscreen = computed(
@@ -141,8 +154,8 @@ function handerOpenAutoFocus(e: Event) {
 // pointer-down-outside
 function pointerDownOutside(e: Event) {
   const target = e.target as HTMLElement;
-  const isDismissableModal = !!target?.dataset.dismissableModal;
-  if (!closeOnClickModal.value || !isDismissableModal) {
+  const isDismissableModal = target?.dataset.dismissableModal;
+  if (!closeOnClickModal.value || isDismissableModal !== id) {
     e.preventDefault();
     e.stopPropagation();
   }
@@ -152,6 +165,9 @@ function handleFocusOutside(e: Event) {
   e.preventDefault();
   e.stopPropagation();
 }
+const getAppendTo = computed(() => {
+  return appendToMain.value ? `#${ELEMENT_ID_MAIN_CONTENT}` : undefined;
+});
 </script>
 <template>
   <Dialog
@@ -161,11 +177,14 @@ function handleFocusOutside(e: Event) {
   >
     <DialogContent
       ref="contentRef"
+      :append-to="getAppendTo"
       :class="
         cn(
-          'border-border left-0 right-0 top-[10vh] mx-auto flex max-h-[80%] w-[520px] flex-col border p-0',
+          'left-0 right-0 top-[10vh] mx-auto flex max-h-[80%] w-[520px] flex-col p-0 sm:rounded-[var(--radius)]',
           modalClass,
           {
+            'border-border border': bordered,
+            'shadow-3xl': !bordered,
             'left-0 top-0 size-full max-h-full !translate-x-0 !translate-y-0':
               shouldFullscreen,
             'top-1/2 !-translate-y-1/2': centered && !shouldFullscreen,
@@ -176,20 +195,24 @@ function handleFocusOutside(e: Event) {
       :modal="modal"
       :open="state?.isOpen"
       :show-close="closable"
+      :z-index="zIndex"
       close-class="top-3"
       @close-auto-focus="handleFocusOutside"
+      @closed="() => modalApi?.onClosed()"
       @escape-key-down="escapeKeyDown"
       @focus-outside="handleFocusOutside"
       @interact-outside="interactOutside"
       @open-auto-focus="handerOpenAutoFocus"
+      @opened="() => modalApi?.onOpened()"
       @pointer-down-outside="pointerDownOutside"
     >
       <DialogHeader
         ref="headerRef"
         :class="
           cn(
-            'border-b px-5 py-4',
+            'px-5 py-4',
             {
+              'border-b': bordered,
               hidden: !header,
               'cursor-move select-none': shouldDraggable,
             },
@@ -222,7 +245,7 @@ function handleFocusOutside(e: Event) {
         ref="wrapperRef"
         :class="
           cn('relative min-h-40 flex-1 overflow-y-auto p-3', contentClass, {
-            'overflow-hidden': showLoading,
+            'pointer-events-none overflow-hidden': showLoading,
           })
         "
       >
@@ -247,12 +270,19 @@ function handleFocusOutside(e: Event) {
         v-if="showFooter"
         ref="footerRef"
         :class="
-          cn('flex-row items-center justify-end border-t p-2', footerClass)
+          cn(
+            'flex-row items-center justify-end p-2',
+            {
+              'border-t': bordered,
+            },
+            footerClass,
+          )
         "
       >
         <slot name="prepend-footer"></slot>
         <slot name="footer">
-          <VbenButton
+          <component
+            :is="components.DefaultButton || VbenButton"
             v-if="showCancelButton"
             variant="ghost"
             @click="() => modalApi?.onCancel()"
@@ -260,16 +290,19 @@ function handleFocusOutside(e: Event) {
             <slot name="cancelText">
               {{ cancelText || $t('cancel') }}
             </slot>
-          </VbenButton>
-          <VbenButton
+          </component>
+
+          <component
+            :is="components.PrimaryButton || VbenButton"
             v-if="showConfirmButton"
+            :disabled="confirmDisabled"
             :loading="confirmLoading"
             @click="() => modalApi?.onConfirm()"
           >
             <slot name="confirmText">
               {{ confirmText || $t('confirm') }}
             </slot>
-          </VbenButton>
+          </component>
         </slot>
         <slot name="append-footer"></slot>
       </DialogFooter>

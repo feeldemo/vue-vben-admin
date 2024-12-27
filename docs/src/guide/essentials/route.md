@@ -8,11 +8,29 @@ outline: deep
 
 ## 路由类型
 
-路由分为静态路由和动态路由，静态路由是在项目启动时就已经确定的路由。动态路由一般是在用户登录后，根据用户的权限动态生成的路由。
+路由分为核心路由、静态路由和动态路由，核心路由是框架内置的路由，包含了根路由、登录路由、404路由等；静态路由是在项目启动时就已经确定的路由；动态路由一般是在用户登录后，根据用户的权限动态生成的路由。
+
+静态路由和动态路由都会走权限控制，可以通过配置路由的 `meta` 属性中的 `authority` 字段来控制权限，可以参考[路由权限控制](https://github.com/vbenjs/vue-vben-admin/blob/main/playground/src/router/routes/modules/demos.ts)。
+
+### 核心路由
+
+核心路由是框架内置的路由，包含了根路由、登录路由、404路由等，核心路由的配置在应用下 `src/router/routes/core` 目录下
+
+::: tip
+
+核心路由主要用于框架的基础功能，因此不建议将业务相关的路由放在核心路由中，推荐将业务相关的路由放在静态路由或动态路由中。
+
+:::
 
 ### 静态路由
 
-如果你的页面项目不需要权限控制，可以直接使用静态路由，静态路由的配置在应用下 `src/router/routes/index` 目录下，打开注释的文件内容:
+静态路由的配置在应用下 `src/router/routes/index` 目录下，打开注释的文件内容:
+
+::: tip
+
+权限控制是通过路由的 `meta` 属性中的 `authority` 字段来控制的，如果你的页面项目不需要权限控制，可以不设置 `authority` 字段。
+
+:::
 
 ```ts
 // 有需要可以自行打开注释，并创建文件夹
@@ -105,7 +123,7 @@ const routes: RouteRecordRaw[] = [
       icon: 'ic:baseline-view-in-ar',
       keepAlive: true,
       order: 1000,
-      title: $t('page.demos.title'),
+      title: $t('demos.title'),
     },
     name: 'Demos',
     path: '/demos',
@@ -115,7 +133,7 @@ const routes: RouteRecordRaw[] = [
       {
         meta: {
           icon: 'ic:round-menu',
-          title: $t('page.demos.nested.title'),
+          title: $t('demos.nested.title'),
         },
         name: 'NestedDemos',
         path: '/demos/nested',
@@ -128,7 +146,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               icon: 'ic:round-menu',
               keepAlive: true,
-              title: $t('page.demos.nested.menu1'),
+              title: $t('demos.nested.menu1'),
             },
           },
           {
@@ -137,7 +155,7 @@ const routes: RouteRecordRaw[] = [
             meta: {
               icon: 'ic:round-menu',
               keepAlive: true,
-              title: $t('page.demos.nested.menu2'),
+              title: $t('demos.nested.menu2'),
             },
             redirect: '/demos/nested/menu2/menu2-1',
             children: [
@@ -148,7 +166,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                   icon: 'ic:round-menu',
                   keepAlive: true,
-                  title: $t('page.demos.nested.menu2_1'),
+                  title: $t('demos.nested.menu2_1'),
                 },
               },
             ],
@@ -158,7 +176,7 @@ const routes: RouteRecordRaw[] = [
             path: '/demos/nested/menu3',
             meta: {
               icon: 'ic:round-menu',
-              title: $t('page.demos.nested.menu3'),
+              title: $t('demos.nested.menu3'),
             },
             redirect: '/demos/nested/menu3/menu3-1',
             children: [
@@ -169,7 +187,7 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                   icon: 'ic:round-menu',
                   keepAlive: true,
-                  title: $t('page.demos.nested.menu3_1'),
+                  title: $t('demos.nested.menu3_1'),
                 },
               },
               {
@@ -177,7 +195,7 @@ const routes: RouteRecordRaw[] = [
                 path: 'menu3-2',
                 meta: {
                   icon: 'ic:round-menu',
-                  title: $t('page.demos.nested.menu3_2'),
+                  title: $t('demos.nested.menu3_2'),
                 },
                 redirect: '/demos/nested/menu3/menu3-2/menu3-2-1',
                 children: [
@@ -189,7 +207,7 @@ const routes: RouteRecordRaw[] = [
                     meta: {
                       icon: 'ic:round-menu',
                       keepAlive: true,
-                      title: $t('page.demos.nested.menu3_2_1'),
+                      title: $t('demos.nested.menu3_2_1'),
                     },
                   },
                 ],
@@ -383,9 +401,17 @@ interface RouteMeta {
    */
   menuVisibleWithForbidden?: boolean;
   /**
+   * 在新窗口打开
+   */
+  openInNewWindow?: boolean;
+  /**
    * 用于路由->菜单排序
    */
   order?: number;
+  /**
+   * 菜单所携带的参数
+   */
+  query?: Recordable;
   /**
    * 标题名称
    */
@@ -535,12 +561,28 @@ interface RouteMeta {
 
 用于配置页面在菜单可以看到，但是访问会被重定向到403。
 
+### openInNewWindow
+
+- 类型：`boolean`
+- 默认值：`false`
+
+设置为 `true` 时，会在新窗口打开页面。
+
 ### order
 
 - 类型：`number`
 - 默认值：`0`
 
 用于配置页面的排序，用于路由到菜单排序。
+
+_注意:_ 排序仅针对一级菜单有效，二级菜单的排序需要在对应的一级菜单中按代码顺序设置。
+
+### query
+
+- 类型：`Recordable`
+- 默认值：`{}`
+
+用于配置页面的菜单参数，会在菜单中传递给页面。
 
 ## 路由刷新
 

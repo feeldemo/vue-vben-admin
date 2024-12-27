@@ -1,3 +1,4 @@
+import type { Recordable } from '@vben-core/typings';
 import type {
   FormState,
   GenericObject,
@@ -13,41 +14,45 @@ import { Store } from '@vben-core/shared/store';
 import {
   bindMethods,
   createMerge,
+  isDate,
+  isDayjsObject,
   isFunction,
+  isObject,
+  mergeWithArrayOverride,
   StateHandler,
 } from '@vben-core/shared/utils';
-
-const merge = createMerge((originObj, key, updates) => {
-  if (Array.isArray(originObj[key]) && Array.isArray(updates)) {
-    originObj[key] = updates;
-    return true;
-  }
-});
 
 function getDefaultState(): VbenFormProps {
   return {
     actionWrapperClass: '',
     collapsed: false,
     collapsedRows: 1,
+    collapseTriggerResize: false,
     commonConfig: {},
     handleReset: undefined,
     handleSubmit: undefined,
+    handleValuesChange: undefined,
     layout: 'horizontal',
     resetButtonOptions: {},
     schema: [],
     showCollapseButton: false,
     showDefaultActions: true,
     submitButtonOptions: {},
+    submitOnChange: false,
+    submitOnEnter: false,
     wrapperClass: 'grid-cols-1',
   };
 }
 
 export class FormApi {
+  // 最后一次点击提交时的表单值
+  private latestSubmissionValues: null | Recordable<any> = null;
+  private prevState: null | VbenFormProps = null;
+
   // private api: Pick<VbenFormProps, 'handleReset' | 'handleSubmit'>;
   public form = {} as FormActions;
   isMounted = false;
 
-  // private prevState!: ModalState;
   public state: null | VbenFormProps = null;
 
   stateHandler: StateHandler;
@@ -66,7 +71,9 @@ export class FormApi {
       },
       {
         onUpdate: () => {
+          this.prevState = this.state;
           this.state = this.store.state;
+          this.updateState();
         },
       },
     );
@@ -87,9 +94,31 @@ export class FormApi {
     return this.form;
   }
 
+  private updateState() {
+    const currentSchema = this.state?.schema ?? [];
+    const prevSchema = this.prevState?.schema ?? [];
+    // 进行了删除schema操作
+    if (currentSchema.length < prevSchema.length) {
+      const currentFields = new Set(
+        currentSchema.map((item) => item.fieldName),
+      );
+      const deletedSchema = prevSchema.filter(
+        (item) => !currentFields.has(item.fieldName),
+      );
+
+      for (const schema of deletedSchema) {
+        this.form?.setFieldValue(schema.fieldName, undefined);
+      }
+    }
+  }
+
   // 如果需要多次更新状态，可以使用 batch 方法
   batchStore(cb: () => void) {
     this.store.batch(cb);
+  }
+
+  getLatestSubmissionValues() {
+    return this.latestSubmissionValues || {};
   }
 
   getState() {
@@ -101,10 +130,57 @@ export class FormApi {
     return form.values;
   }
 
+  async isFieldValid(fieldName: string) {
+    const form = await this.getForm();
+    return form.isFieldValid(fieldName);
+  }
+
+  merge(formApi: FormApi) {
+    const chain = [this, formApi];
+    const proxy = new Proxy(formApi, {
+      get(target: any, prop: any) {
+        if (prop === 'merge') {
+          return (nextFormApi: FormApi) => {
+            chain.push(nextFormApi);
+            return proxy;
+          };
+        }
+        if (prop === 'submitAllForm') {
+          return async (needMerge: boolean = true) => {
+            try {
+              const results = await Promise.all(
+                chain.map(async (api) => {
+                  const form = await api.getForm();
+                  const validateResult = await api.validate();
+                  if (!validateResult.valid) {
+                    return;
+                  }
+                  const rawValues = toRaw(form.values || {});
+                  return rawValues;
+                }),
+              );
+              if (needMerge) {
+                const mergedResults = Object.assign({}, ...results);
+                return mergedResults;
+              }
+              return results;
+            } catch (error) {
+              console.error('Validation error:', error);
+            }
+          };
+        }
+        return target[prop];
+      },
+    });
+
+    return proxy;
+  }
+
   mount(formActions: FormActions) {
     if (!this.isMounted) {
       Object.assign(this.form, formActions);
       this.stateHandler.setConditionTrue();
+      this.setLatestSubmissionValues({ ...toRaw(this.form.values) });
       this.isMounted = true;
     }
   }
@@ -117,7 +193,7 @@ export class FormApi {
     const fieldSet = new Set(fields);
     const schema = this.state?.schema ?? [];
 
-    const filterSchema = schema.filter((item) => fieldSet.has(item.fieldName));
+    const filterSchema = schema.filter((item) => !fieldSet.has(item.fieldName));
 
     this.setState({
       schema: filterSchema,
@@ -148,6 +224,10 @@ export class FormApi {
     form.setFieldValue(field, value, shouldValidate);
   }
 
+  setLatestSubmissionValues(values: null | Recordable<any>) {
+    this.latestSubmissionValues = { ...toRaw(values) };
+  }
+
   setState(
     stateOrFn:
       | ((prev: VbenFormProps) => Partial<VbenFormProps>)
@@ -155,19 +235,50 @@ export class FormApi {
   ) {
     if (isFunction(stateOrFn)) {
       this.store.setState((prev) => {
-        return merge(stateOrFn(prev), prev);
+        return mergeWithArrayOverride(stateOrFn(prev), prev);
       });
     } else {
-      this.store.setState((prev) => merge(stateOrFn, prev));
+      this.store.setState((prev) => mergeWithArrayOverride(stateOrFn, prev));
     }
   }
 
+  /**
+   * 设置表单值
+   * @param fields record
+   * @param filterFields 过滤不在schema中定义的字段 默认为true
+   * @param shouldValidate
+   */
   async setValues(
     fields: Record<string, any>,
+    filterFields: boolean = true,
     shouldValidate: boolean = false,
   ) {
     const form = await this.getForm();
-    form.setValues(fields, shouldValidate);
+    if (!filterFields) {
+      form.setValues(fields, shouldValidate);
+      return;
+    }
+
+    /**
+     * 合并算法有待改进，目前的算法不支持object类型的值。
+     * antd的日期时间相关组件的值类型为dayjs对象
+     * element-plus的日期时间相关组件的值类型可能为Date对象
+     * 以上两种类型需要排除深度合并
+     */
+    const fieldMergeFn = createMerge((obj, key, value) => {
+      if (key in obj) {
+        obj[key] =
+          !Array.isArray(obj[key]) &&
+          isObject(obj[key]) &&
+          !isDayjsObject(obj[key]) &&
+          !isDate(obj[key])
+            ? fieldMergeFn(obj[key], value)
+            : value;
+      }
+      return true;
+    });
+    const filteredFields = fieldMergeFn(fields, form.values);
+    form.setValues(filteredFields, shouldValidate);
   }
 
   async submitForm(e?: Event) {
@@ -177,11 +288,14 @@ export class FormApi {
     await form.submitForm();
     const rawValues = toRaw(form.values || {});
     await this.state?.handleSubmit?.(rawValues);
+
     return rawValues;
   }
 
-  unmounted() {
+  unmount() {
+    this.form?.resetForm?.();
     // this.state = null;
+    this.latestSubmissionValues = null;
     this.isMounted = false;
     this.stateHandler.reset();
   }
@@ -211,7 +325,10 @@ export class FormApi {
     currentSchema.forEach((schema, index) => {
       const updatedData = updatedMap[schema.fieldName];
       if (updatedData) {
-        currentSchema[index] = merge(updatedData, schema) as FormSchema;
+        currentSchema[index] = mergeWithArrayOverride(
+          updatedData,
+          schema,
+        ) as FormSchema;
       }
     });
     this.setState({ schema: currentSchema });
@@ -221,6 +338,25 @@ export class FormApi {
     const form = await this.getForm();
 
     const validateResult = await form.validate(opts);
+
+    if (Object.keys(validateResult?.errors ?? {}).length > 0) {
+      console.error('validate error', validateResult?.errors);
+    }
+    return validateResult;
+  }
+
+  async validateAndSubmitForm() {
+    const form = await this.getForm();
+    const { valid } = await form.validate();
+    if (!valid) {
+      return;
+    }
+    return await this.submitForm();
+  }
+
+  async validateField(fieldName: string, opts?: Partial<ValidationOptions>) {
+    const form = await this.getForm();
+    const validateResult = await form.validateField(fieldName, opts);
 
     if (Object.keys(validateResult?.errors ?? {}).length > 0) {
       console.error('validate error', validateResult?.errors);

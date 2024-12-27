@@ -31,4 +31,6 @@ interface BasicUserInfo {
   username: string;
 }
 
-export type { BasicOption, BasicUserInfo, SelectOption, TabOption };
+type ClassType = Array<object | string> | object | string;
+
+export type { BasicOption, BasicUserInfo, ClassType, SelectOption, TabOption };
