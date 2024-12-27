@@ -1,14 +1,14 @@
 import type {
   // 系列类型的定义后缀都为 SeriesOption
   BarSeriesOption,
-  LineSeriesOption,
+  LineSeriesOption
 } from 'echarts/charts';
 import type {
   DatasetComponentOption,
   GridComponentOption,
   // 组件类型的定义后缀都为 ComponentOption
   TitleComponentOption,
-  TooltipComponentOption,
+  TooltipComponentOption
 } from 'echarts/components';
 import type { ComposeOption } from 'echarts/core';
 
@@ -38,6 +38,7 @@ export type ECOption = ComposeOption<
   | TooltipComponentOption
 >;
 
+ 
 // 注册必须的组件
 echarts.use([
   TitleComponent,

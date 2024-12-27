@@ -23,6 +23,7 @@
     "@vben/preferences": "workspace:*",
     "@vueuse/core": "catalog:",
     "echarts": "catalog:",
+    "echarts-liquidfill": "^3.1.0",
     "vue": "catalog:"
   }
 }

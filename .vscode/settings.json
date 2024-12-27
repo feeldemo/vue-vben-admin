@@ -225,5 +225,6 @@
   },
   "[xml]": {
     "editor.defaultFormatter": "fabianlauer.vs-code-xml-format"
-  }
+  },
+  "vue3snippets.enable-compile-vue-file-on-did-save-code": true
 }

@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import type { ISearchMenuDto } from '#/api';
 import { Page } from '@vben/common-ui';
-import { ElMessageBox, ElNotification, ElSpace, type FormInstance } from 'element-plus';
+import { ElMessageBox, ElNotification, ElSpace } from 'element-plus';
 import { ref, reactive } from 'vue';
 import { SvgPcs, SvgPowerStatus, SvgPowerDui } from '@vben/icons';
 
-const formRef = ref<FormInstance>();
 
 /** searchbody */
 const searchBody = reactive({
@@ -62,46 +61,22 @@ const click = async (val: string | number | boolean) => {
 
 <template>
   <Page>
-    <ElCard class="mb-5">
-      <ElForm ref="formRef" :inline="true" :model="searchBody">
-        <ElFormItem :label="$t(`page.sys.index.search.menu.name`)">
-          <ElInput v-model="searchBody.menuName" :placeholder="$t(`page.sys.index.search.menu.placeholder`)"
-            clearable />
-        </ElFormItem>
-        <ElFormItem :label="$t(`page.sys.index.search.type.name`)" style="width: 200px">
-          <ElSelect v-model="searchBody.type" :placeholder="$t(`page.sys.index.search.type.placeholder`)" clearable>
-            <ElOption label="菜单" :value=1 />
-            <ElOption label="按钮" :value=2 />
-          </ElSelect>
-        </ElFormItem>
-        <ElFormItem :label="$t(`page.sys.index.search.status.name`)" style="width: 200px">
-          <ElSelect v-model="searchBody.status" :placeholder="$t(`page.sys.index.search.status.placeholder`)" clearable>
-            <ElOption label="启用" :value=1 />
-            <ElOption label="禁用" :value=0 />
-          </ElSelect>
-        </ElFormItem>
-        <ElFormItem style="float: right">
-          <ElButton type="primary" @click="">搜索</ElButton>
-          <ElButton @click="">重置</ElButton>
-        </ElFormItem>
-      </ElForm>
-    </ElCard>
-    <ElCard class="mb-5" style="height: 600px;">
-      <ElSpace wrap :size="20">
-        <ElCard  @click="click" shadow="always">
+    <!-- <ElCard class="mb-5"> -->
+      <ElSpace wrap >
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
           <template #header> 高特100kW/215kWh储能站1</template>
           <ElRow :gutter="80">
             <ElCol :span="8">
-              <SvgPowerStatus class="size-8"></SvgPowerStatus>
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
             </ElCol>
             <ElCol :span="8">
-              <SvgPcs class="size-8" />
+              <SvgPcs class="size-6" />
             </ElCol>
             <ElCol :span="8">
-              <SvgPowerDui class="size-8" />
+              <SvgPowerDui class="size-6" />
             </ElCol>
           </ElRow>
-          <ElRow :gutter="20" style="margin-top: 20px;margin-bottom: 0px;">
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
             <ElCol :span="8" :pull="1">
               <span>电站状态</span>
             </ElCol>
@@ -114,32 +89,32 @@ const click = async (val: string | number | boolean) => {
           </ElRow>
           <template #footer>
             <ElRow :gutter="80">
-              <ElCol :span="8">
+              <ElCol :span="9">
                 <span>放电</span>
               </ElCol>
               <ElCol :span="8">
                 <span>1</span>
               </ElCol>
-              <ElCol :span="8">
+              <ElCol :span="7">
                 <span>1</span>
               </ElCol>
             </ElRow>
           </template>
         </ElCard>
-        <ElCard  @click="click">
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
           <template #header> 高特100kW/215kWh储能站1</template>
           <ElRow :gutter="80">
             <ElCol :span="8">
-              <SvgPowerStatus class="size-8"></SvgPowerStatus>
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
             </ElCol>
             <ElCol :span="8">
-              <SvgPcs class="size-8" />
+              <SvgPcs class="size-6" />
             </ElCol>
             <ElCol :span="8">
-              <SvgPowerDui class="size-8" />
+              <SvgPowerDui class="size-6" />
             </ElCol>
           </ElRow>
-          <ElRow :gutter="20" style="margin-top: 20px;margin-bottom: 0px;">
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
             <ElCol :span="8" :pull="1">
               <span>电站状态</span>
             </ElCol>
@@ -152,32 +127,32 @@ const click = async (val: string | number | boolean) => {
           </ElRow>
           <template #footer>
             <ElRow :gutter="80">
-              <ElCol :span="8">
+              <ElCol :span="9">
                 <span>放电</span>
               </ElCol>
               <ElCol :span="8">
                 <span>1</span>
               </ElCol>
-              <ElCol :span="8">
+              <ElCol :span="7">
                 <span>1</span>
               </ElCol>
             </ElRow>
           </template>
         </ElCard>
-        <ElCard  @click="click">
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
           <template #header> 高特100kW/215kWh储能站1</template>
           <ElRow :gutter="80">
             <ElCol :span="8">
-              <SvgPowerStatus class="size-8"></SvgPowerStatus>
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
             </ElCol>
             <ElCol :span="8">
-              <SvgPcs class="size-8" />
+              <SvgPcs class="size-6" />
             </ElCol>
             <ElCol :span="8">
-              <SvgPowerDui class="size-8" />
+              <SvgPowerDui class="size-6" />
             </ElCol>
           </ElRow>
-          <ElRow :gutter="20" style="margin-top: 20px;margin-bottom: 0px;">
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
             <ElCol :span="8" :pull="1">
               <span>电站状态</span>
             </ElCol>
@@ -190,32 +165,32 @@ const click = async (val: string | number | boolean) => {
           </ElRow>
           <template #footer>
             <ElRow :gutter="80">
-              <ElCol :span="8">
+              <ElCol :span="9">
                 <span>放电</span>
               </ElCol>
               <ElCol :span="8">
                 <span>1</span>
               </ElCol>
-              <ElCol :span="8">
+              <ElCol :span="7">
                 <span>1</span>
               </ElCol>
             </ElRow>
           </template>
         </ElCard>
-        <ElCard  @click="click">
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
           <template #header> 高特100kW/215kWh储能站1</template>
           <ElRow :gutter="80">
             <ElCol :span="8">
-              <SvgPowerStatus class="size-8"></SvgPowerStatus>
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
             </ElCol>
             <ElCol :span="8">
-              <SvgPcs class="size-8" />
+              <SvgPcs class="size-6" />
             </ElCol>
             <ElCol :span="8">
-              <SvgPowerDui class="size-8" />
+              <SvgPowerDui class="size-6" />
             </ElCol>
           </ElRow>
-          <ElRow :gutter="20" style="margin-top: 20px;margin-bottom: 0px;">
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
             <ElCol :span="8" :pull="1">
               <span>电站状态</span>
             </ElCol>
@@ -228,32 +203,32 @@ const click = async (val: string | number | boolean) => {
           </ElRow>
           <template #footer>
             <ElRow :gutter="80">
-              <ElCol :span="8">
+              <ElCol :span="9">
                 <span>放电</span>
               </ElCol>
               <ElCol :span="8">
                 <span>1</span>
               </ElCol>
-              <ElCol :span="8">
+              <ElCol :span="7">
                 <span>1</span>
               </ElCol>
             </ElRow>
           </template>
         </ElCard>
-        <ElCard  @click="click">
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
           <template #header> 高特100kW/215kWh储能站1</template>
           <ElRow :gutter="80">
             <ElCol :span="8">
-              <SvgPowerStatus class="size-8"></SvgPowerStatus>
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
             </ElCol>
             <ElCol :span="8">
-              <SvgPcs class="size-8" />
+              <SvgPcs class="size-6" />
             </ElCol>
             <ElCol :span="8">
-              <SvgPowerDui class="size-8" />
+              <SvgPowerDui class="size-6" />
             </ElCol>
           </ElRow>
-          <ElRow :gutter="20" style="margin-top: 20px;margin-bottom: 0px;">
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
             <ElCol :span="8" :pull="1">
               <span>电站状态</span>
             </ElCol>
@@ -266,20 +241,59 @@ const click = async (val: string | number | boolean) => {
           </ElRow>
           <template #footer>
             <ElRow :gutter="80">
-              <ElCol :span="8">
+              <ElCol :span="9">
                 <span>放电</span>
               </ElCol>
               <ElCol :span="8">
                 <span>1</span>
               </ElCol>
-              <ElCol :span="8">
+              <ElCol :span="7">
                 <span>1</span>
               </ElCol>
             </ElRow>
           </template>
         </ElCard>
+        <ElCard  @click="click" shadow="always" style="margin-top: 5px;">
+          <template #header> 高特100kW/215kWh储能站1</template>
+          <ElRow :gutter="80">
+            <ElCol :span="8">
+              <SvgPowerStatus class="size-6"></SvgPowerStatus>
+            </ElCol>
+            <ElCol :span="8">
+              <SvgPcs class="size-6" />
+            </ElCol>
+            <ElCol :span="8">
+              <SvgPowerDui class="size-6" />
+            </ElCol>
+          </ElRow>
+          <ElRow :gutter="20" style="margin-top: 5px;margin-bottom: 0px;">
+            <ElCol :span="8" :pull="1">
+              <span>电站状态</span>
+            </ElCol>
+            <ElCol :span="8" :push="2">
+              <span>pcs</span>
+            </ElCol>
+            <ElCol :span="8" :push="3">
+              <span>电池堆</span>
+            </ElCol>
+          </ElRow>
+          <template #footer>
+            <ElRow :gutter="80">
+              <ElCol :span="9">
+                <span>放电</span>
+              </ElCol>
+              <ElCol :span="8">
+                <span>1</span>
+              </ElCol>
+              <ElCol :span="7">
+                <span>1</span>
+              </ElCol>
+            </ElRow>
+          </template>
+        </ElCard>
+
       </ElSpace>
-    </ElCard>
+    <!-- </ElCard> -->
     <ElCard style="margin-top: 10px">
       <ElPagination v-model="drawerRef" :current-page="searchBody.page" v-model:page-size="searchBody.size"
         :background="background" :disabled="disabled" :page-sizes="[5, 10, 20, 50]" :total="total"
