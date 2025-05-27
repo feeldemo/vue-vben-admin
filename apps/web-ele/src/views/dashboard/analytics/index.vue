@@ -5,11 +5,11 @@ import type { TabOption } from "@vben/types";
 import { AnalysisChartCard, AnalysisChartsTabs, AnalysisOverview } from "@vben/common-ui";
 import { SvgBellIcon, SvgCakeIcon, SvgCardIcon, SvgDownloadIcon } from "@vben/icons";
 
-import AnalyticsTrends from "./analytics-trends.vue";
-import AnalyticsVisitsData from "./analytics-visits-data.vue";
-import AnalyticsVisitsSales from "./analytics-visits-sales.vue";
-import AnalyticsVisitsSource from "./analytics-visits-source.vue";
-import AnalyticsVisits from "./analytics-visits.vue";
+import AnalyticsTrends from './analytics-trends.vue';
+import AnalyticsVisitsData from './analytics-visits-data.vue';
+import AnalyticsVisitsSales from './analytics-visits-sales.vue';
+import AnalyticsVisitsSource from './analytics-visits-source.vue';
+import AnalyticsVisits from './analytics-visits.vue';
 
 const overviewItems: AnalysisOverviewItem[] = [
   {

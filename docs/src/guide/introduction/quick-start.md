@@ -58,7 +58,7 @@ git clone https://gitee.com/annsion/vue-vben-admin.git
 cd vue-vben-admin
 
 # 使用项目指定的pnpm版本进行依赖安装
-corepack enable
+npm i -g corepack
 
 # 安装依赖
 pnpm install
@@ -67,7 +67,7 @@ pnpm install
 ::: tip 注意
 
 - 项目只支持使用 `pnpm` 进行依赖安装，默认会使用 `corepack` 来安装指定版本的 `pnpm`。:
-- 如果你的网络环境无法访问npm源，你可以设置系统的环境变量`COREPACK_REGISTRY=https://registry.npmmirror.com`，然后再执行`pnpm install`。
+- 如果你的网络环境无法访问npm源，你可以设置系统的环境变量`COREPACK_NPM_REGISTRY=https://registry.npmmirror.com`，然后再执行`pnpm install`。
 - 如果你不想使用`corepack`，你需要禁用`corepack`，然后使用你自己的`pnpm`进行安装。
 
 :::

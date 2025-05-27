@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DrawerProps, ExtendedDrawerApi } from './drawer';
 
-import { computed, provide, ref, useId, watch } from 'vue';
+import { computed, provide, ref, unref, useId, watch } from 'vue';
 
 import {
   useIsMobile,
@@ -10,6 +10,7 @@ import {
 } from '@vben-core/composables';
 import { X } from '@vben-core/icons';
 import {
+  Separator,
   Sheet,
   SheetClose,
   SheetContent,
@@ -33,7 +34,10 @@ interface Props extends DrawerProps {
 
 const props = withDefaults(defineProps<Props>(), {
   appendToMain: false,
+  closeIconPlacement: 'right',
+  destroyOnClose: false,
   drawerApi: undefined,
+  submitting: false,
   zIndex: 1000,
 });
 
@@ -53,12 +57,14 @@ const {
   cancelText,
   class: drawerClass,
   closable,
+  closeIconPlacement,
   closeOnClickModal,
   closeOnPressEscape,
   confirmLoading,
   confirmText,
   contentClass,
   description,
+  destroyOnClose,
   footer: showFooter,
   footerClass,
   header: showHeader,
@@ -66,33 +72,35 @@ const {
   loading: showLoading,
   modal,
   openAutoFocus,
+  overlayBlur,
   placement,
   showCancelButton,
   showConfirmButton,
+  submitting,
   title,
   titleTooltip,
   zIndex,
 } = usePriorityValues(props, state);
 
-watch(
-  () => showLoading.value,
-  (v) => {
-    if (v && wrapperRef.value) {
-      wrapperRef.value.scrollTo({
-        // behavior: 'smooth',
-        top: 0,
-      });
-    }
-  },
-);
+// watch(
+//   () => showLoading.value,
+//   (v) => {
+//     if (v && wrapperRef.value) {
+//       wrapperRef.value.scrollTo({
+//         // behavior: 'smooth',
+//         top: 0,
+//       });
+//     }
+//   },
+// );
 
 function interactOutside(e: Event) {
-  if (!closeOnClickModal.value) {
+  if (!closeOnClickModal.value || submitting.value) {
     e.preventDefault();
   }
 }
 function escapeKeyDown(e: KeyboardEvent) {
-  if (!closeOnPressEscape.value) {
+  if (!closeOnPressEscape.value || submitting.value) {
     e.preventDefault();
   }
 }
@@ -100,7 +108,11 @@ function escapeKeyDown(e: KeyboardEvent) {
 function pointerDownOutside(e: Event) {
   const target = e.target as HTMLElement;
   const dismissableDrawer = target?.dataset.dismissableDrawer;
-  if (!closeOnClickModal.value || dismissableDrawer !== id) {
+  if (
+    submitting.value ||
+    !closeOnClickModal.value ||
+    dismissableDrawer !== id
+  ) {
     e.preventDefault();
   }
 }
@@ -117,7 +129,32 @@ function handleFocusOutside(e: Event) {
 }
 
 const getAppendTo = computed(() => {
-  return appendToMain.value ? `#${ELEMENT_ID_MAIN_CONTENT}` : undefined;
+  return appendToMain.value
+    ? `#${ELEMENT_ID_MAIN_CONTENT}>div:not(.absolute)>div`
+    : undefined;
+});
+
+/**
+ * destroyOnClose功能完善
+ */
+// 是否打开过
+const hasOpened = ref(false);
+const isClosed = ref(true);
+watch(
+  () => state?.value?.isOpen,
+  (value) => {
+    isClosed.value = false;
+    if (value && !unref(hasOpened)) {
+      hasOpened.value = true;
+    }
+  },
+);
+function handleClosed() {
+  isClosed.value = true;
+  props.drawerApi?.onClosed();
+}
+const getForceMount = computed(() => {
+  return !unref(destroyOnClose) && unref(hasOpened);
 });
 </script>
 <template>
@@ -132,17 +169,22 @@ const getAppendTo = computed(() => {
         cn('flex w-[520px] flex-col', drawerClass, {
           '!w-full': isMobile || placement === 'bottom' || placement === 'top',
           'max-h-[100vh]': placement === 'bottom' || placement === 'top',
+          hidden: isClosed,
         })
       "
       :modal="modal"
       :open="state?.isOpen"
       :side="placement"
       :z-index="zIndex"
+      :force-mount="getForceMount"
+      :overlay-blur="overlayBlur"
       @close-auto-focus="handleFocusOutside"
+      @closed="handleClosed"
       @escape-key-down="escapeKeyDown"
       @focus-outside="handleFocusOutside"
       @interact-outside="interactOutside"
       @open-auto-focus="handerOpenAutoFocus"
+      @opened="() => drawerApi?.onOpened()"
       @pointer-down-outside="pointerDownOutside"
     >
       <SheetHeader
@@ -153,11 +195,30 @@ const getAppendTo = computed(() => {
             headerClass,
             {
               'px-4 py-3': closable,
+              'pl-2': closable && closeIconPlacement === 'left',
             },
           )
         "
       >
-        <div>
+        <div class="flex items-center">
+          <SheetClose
+            v-if="closable && closeIconPlacement === 'left'"
+            as-child
+            :disabled="submitting"
+            class="data-[state=open]:bg-secondary ml-[2px] cursor-pointer rounded-full opacity-80 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none"
+          >
+            <slot name="close-icon">
+              <VbenIconButton>
+                <X class="size-4" />
+              </VbenIconButton>
+            </slot>
+          </SheetClose>
+          <Separator
+            v-if="closable && closeIconPlacement === 'left'"
+            class="ml-1 mr-2 h-8"
+            decorative
+            orientation="vertical"
+          />
           <SheetTitle v-if="title" class="text-left">
             <slot name="title">
               {{ title }}
@@ -182,13 +243,16 @@ const getAppendTo = computed(() => {
         <div class="flex-center">
           <slot name="extra"></slot>
           <SheetClose
-            v-if="closable"
+            v-if="closable && closeIconPlacement === 'right'"
             as-child
+            :disabled="submitting"
             class="data-[state=open]:bg-secondary ml-[2px] cursor-pointer rounded-full opacity-80 transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none"
           >
-            <VbenIconButton>
-              <X class="size-4" />
-            </VbenIconButton>
+            <slot name="close-icon">
+              <VbenIconButton>
+                <X class="size-4" />
+              </VbenIconButton>
+            </slot>
           </SheetClose>
         </div>
       </SheetHeader>
@@ -202,15 +266,13 @@ const getAppendTo = computed(() => {
         ref="wrapperRef"
         :class="
           cn('relative flex-1 overflow-y-auto p-3', contentClass, {
-            'overflow-hidden': showLoading,
+            'pointer-events-none': showLoading || submitting,
           })
         "
       >
-        <VbenLoading v-if="showLoading" class="size-full" spinning />
-
         <slot></slot>
       </div>
-
+      <VbenLoading v-if="showLoading || submitting" spinning />
       <SheetFooter
         v-if="showFooter"
         :class="
@@ -226,17 +288,18 @@ const getAppendTo = computed(() => {
             :is="components.DefaultButton || VbenButton"
             v-if="showCancelButton"
             variant="ghost"
+            :disabled="submitting"
             @click="() => drawerApi?.onCancel()"
           >
             <slot name="cancelText">
               {{ cancelText || $t('cancel') }}
             </slot>
           </component>
-
+          <slot name="center-footer"></slot>
           <component
             :is="components.PrimaryButton || VbenButton"
             v-if="showConfirmButton"
-            :loading="confirmLoading"
+            :loading="confirmLoading || submitting"
             @click="() => drawerApi?.onConfirm()"
           >
             <slot name="confirmText">

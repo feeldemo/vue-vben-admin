@@ -1,14 +1,9 @@
 <script setup lang="ts">
+import type { StyleValue } from 'vue';
+
 import type { PageProps } from './types';
 
-import {
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  type StyleValue,
-  useTemplateRef,
-} from 'vue';
+import { computed, nextTick, onMounted, ref, useTemplateRef } from 'vue';
 
 import { CSS_VARIABLE_LAYOUT_CONTENT_HEIGHT } from '@vben-core/shared/constants';
 import { cn } from '@vben-core/shared/utils';
@@ -17,7 +12,8 @@ defineOptions({
   name: 'Page',
 });
 
-const { autoContentHeight = false } = defineProps<PageProps>();
+const { autoContentHeight = false, heightOffset = 0 } =
+  defineProps<PageProps>();
 
 const headerHeight = ref(0);
 const footerHeight = ref(0);
@@ -29,7 +25,7 @@ const footerRef = useTemplateRef<HTMLDivElement>('footerRef');
 const contentStyle = computed<StyleValue>(() => {
   if (autoContentHeight) {
     return {
-      height: `calc(var(${CSS_VARIABLE_LAYOUT_CONTENT_HEIGHT}) - ${headerHeight.value}px)`,
+      height: `calc(var(${CSS_VARIABLE_LAYOUT_CONTENT_HEIGHT}) - ${headerHeight.value}px - ${typeof heightOffset === 'number' ? `${heightOffset}px` : heightOffset})`,
       overflowY: shouldAutoHeight.value ? 'auto' : 'unset',
     };
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue';
+
 import { computed, shallowRef, useSlots, watchEffect } from 'vue';
 
 import { VbenScrollbar } from '@vben-core/shadcn-ui';
@@ -64,9 +65,14 @@ interface Props {
   show?: boolean;
   /**
    * 显示折叠按钮
-   * @default false
+   * @default true
    */
   showCollapseButton?: boolean;
+  /**
+   * 显示固定按钮
+   * @default true
+   */
+  showFixedButton?: boolean;
   /**
    * 主题
    */
@@ -94,6 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
   paddingTop: 0,
   show: true,
   showCollapseButton: true,
+  showFixedButton: true,
   zIndex: 0,
 });
 
@@ -266,7 +273,7 @@ function handleMouseleave() {
     @mouseleave="handleMouseleave"
   >
     <SidebarFixedButton
-      v-if="!collapse && !isSidebarMixed"
+      v-if="!collapse && !isSidebarMixed && showFixedButton"
       v-model:expand-on-hover="expandOnHover"
     />
     <div v-if="slots.logo" :style="headerStyle">

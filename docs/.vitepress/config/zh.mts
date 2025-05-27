@@ -1,4 +1,6 @@
-import { type DefaultTheme, defineConfig } from 'vitepress';
+import type { DefaultTheme } from 'vitepress';
+
+import { defineConfig } from 'vitepress';
 
 import { version } from '../../../package.json';
 
@@ -165,6 +167,10 @@ function sidebarComponents(): DefaultTheme.SidebarItem[] {
         {
           link: 'common-ui/vben-api-component',
           text: 'ApiComponent Api组件包装器',
+        },
+        {
+          link: 'common-ui/vben-alert',
+          text: 'Alert 轻量提示框',
         },
         {
           link: 'common-ui/vben-modal',
