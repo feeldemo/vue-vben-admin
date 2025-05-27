@@ -48,7 +48,6 @@ const datas: Array<DataItem> = [
     value: 300
   }
 ]
-datas.length
 </script>
 
 <template>

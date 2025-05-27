@@ -10,5 +10,35 @@
     "title": "概览",
     "analytics": "分析页",
     "workspace": "工作台"
+  },
+  "sys": {
+    "title": "系统管理",
+    "menu": "菜单管理",
+    "index": {
+      "search": {
+        "menu": {
+          "name": "菜单名字",
+          "placeholder": "请输入菜单名字"
+        },
+        "type": {
+          "name": "菜单类型",
+          "placeholder": "请选择菜单类型"
+        },
+        "status": {
+          "name": "菜单状态",
+          "placeholder": "请选择菜单状态"
+        }
+      }
+    },
+    "role": "角色管理",
+    "user": "用户管理"
+  },
+  "devices": {
+    "title": "设备管理"
+  },
+  "project": {
+    "title": "项目管理",
+    "list": "项目列表",
+    "info": "项目详情"
   }
 }

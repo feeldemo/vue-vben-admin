@@ -316,12 +316,12 @@ const statusChange = async (val: string | number | boolean, id: number) => {
         <ElTableColumn label="状态" prop="status" width="100px">
           <template #default="scope">
             <ElSwitch v-model="scope.row.status" inlinePrompt
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" activeText="启用" inactiveText="禁用"
+              style="--el-switch-on-color: #13ce66;--el-switch-off-color: #ff4949" activeText="启用" inactiveText="禁用"
               :activeValue=1 :inactiveValue=0 @change="statusChange(scope.row.status, scope.row.id)" />
           </template>
         </ElTableColumn>
         <ElTableColumn label="创建时间" prop="createAt" />
-        <ElTableColumn fixed="right" label="操作" min-width="70px">
+        <ElTableColumn fixed="right" label="操作" min-width="80px">
           <template #default="scope">
             <ElButton size="small" type="primary" @click="openDrawer(`详情`, scope.row)">详情</ElButton>
             <ElButton size="small" type="warning" @click="openDrawer(`修改`, scope.row)">修改</ElButton>
