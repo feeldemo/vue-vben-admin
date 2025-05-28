@@ -36,12 +36,6 @@ catalogs:
     '@iconify/tailwind':
       specifier: ^1.2.0
       version: 1.2.0
-    '@iconify/vue':
-      specifier: ^5.0.0
-      version: 5.0.0
-    '@intlify/core-base':
-      specifier: ^11.1.3
-      version: 11.1.3
     '@intlify/unplugin-vue-i18n':
       specifier: ^6.0.8
       version: 6.0.8
@@ -219,9 +213,6 @@ catalogs:
     echarts:
       specifier: ^5.6.0
       version: 5.6.0
-    element-plus:
-      specifier: ^2.9.9
-      version: 2.9.9
     eslint:
       specifier: ^9.26.0
       version: 9.26.0
@@ -716,6 +707,12 @@ importers:
 
   apps/web-ele:
     dependencies:
+      '@iconify/icons-mdi':
+        specifier: ^1.2.48
+        version: 1.2.48
+      '@types/node':
+        specifier: ^22.5.1
+        version: 22.15.3
       '@vben/access':
         specifier: workspace:*
         version: link:../../packages/effects/access
@@ -759,13 +756,19 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
       '@vueuse/core':
-        specifier: 'catalog:'
-        version: 13.1.0(vue@3.5.13(typescript@5.8.3))
+        specifier: ^11.0.3
+        version: 11.3.0(vue@3.5.13(typescript@5.8.3))
+      crypto-js:
+        specifier: ^4.2.0
+        version: 4.2.0
       dayjs:
-        specifier: 'catalog:'
+        specifier: ^1.11.13
         version: 1.11.13
+      echarts-liquidfill:
+        specifier: ^3.1.0
+        version: 3.1.0(echarts@5.6.0)
       element-plus:
-        specifier: 'catalog:'
+        specifier: ^2.8.2
         version: 2.9.9(vue@3.5.13(typescript@5.8.3))
       pinia:
         specifier: ^3.0.2
@@ -774,7 +777,7 @@ importers:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
       vue-router:
-        specifier: 'catalog:'
+        specifier: ^4.4.4
         version: 4.5.1(vue@3.5.13(typescript@5.8.3))
     devDependencies:
       unplugin-element-plus:
@@ -1217,11 +1220,11 @@ importers:
   packages/@core/base/icons:
     dependencies:
       '@iconify/vue':
-        specifier: 'catalog:'
-        version: 5.0.0(vue@3.5.13(typescript@5.8.3))
+        specifier: ^4.1.2
+        version: 4.3.0(vue@3.5.13(typescript@5.8.3))
       lucide-vue-next:
-        specifier: 'catalog:'
-        version: 0.507.0(vue@3.5.13(typescript@5.8.3))
+        specifier: ^0.436.0
+        version: 0.436.0(vue@3.5.13(typescript@5.8.3))
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
@@ -1705,6 +1708,9 @@ importers:
       echarts:
         specifier: 'catalog:'
         version: 5.6.0
+      echarts-liquidfill:
+        specifier: ^3.1.0
+        version: 3.1.0(echarts@5.6.0)
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.8.3)
@@ -1745,9 +1751,6 @@ importers:
 
   packages/locales:
     dependencies:
-      '@intlify/core-base':
-        specifier: 'catalog:'
-        version: 11.1.3
       '@vben-core/composables':
         specifier: workspace:*
         version: link:../@core/composables
@@ -3572,6 +3575,9 @@ packages:
   '@iconify-json/vscode-icons@1.2.20':
     resolution: {integrity: sha512-xuWqr/SrckUoFi6kpSH/NrNGK+CuZ8LNnBY8qkRdkQvHmhirXvwsLfTKHoFndTsOlxfsHahlOLVCCb523kdqMA==}
 
+  '@iconify/icons-mdi@1.2.48':
+    resolution: {integrity: sha512-1Tiq+iX1d2MzrdDiw45Tc9HuhNgg8H4vvaKNV+kF+jmr/kPG+YyeLMyXUKp4bwv+gheIAgNpZPjuqAPRkmMieA==}
+
   '@iconify/json@2.2.334':
     resolution: {integrity: sha512-VcnEHMZs1VT8QvU5dzT1Eau35nGSZdIcJlBRHkxe/HLS1kKkyuFFrsA5aIaHeM7vvU6Y8rPS4DDD2xDmnNgP3g==}
 
@@ -3584,8 +3590,8 @@ packages:
   '@iconify/utils@2.3.0':
     resolution: {integrity: sha512-GmQ78prtwYW6EtzXRU1rY+KwOKfz32PD7iJh6Iyqw68GiKuoZ2A6pRtzWONz5VQJbp50mEjXh/7NkumtrAgRKA==}
 
-  '@iconify/vue@5.0.0':
-    resolution: {integrity: sha512-C+KuEWIF5nSBrobFJhT//JS87OZ++QDORB6f2q2Wm6fl2mueSTpFBeBsveK0KW9hWiZ4mNiPjsh6Zs4jjdROSg==}
+  '@iconify/vue@4.3.0':
+    resolution: {integrity: sha512-Xq0h6zMrHBbrW8jXJ9fISi+x8oDQllg5hTDkDuxnWiskJ63rpJu9CvJshj8VniHVTbsxCg9fVoPAaNp3RQI5OQ==}
     peerDependencies:
       vue: ^3.5.13
 
@@ -4837,6 +4843,9 @@ packages:
   '@vueuse/core@10.11.1':
     resolution: {integrity: sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==}
 
+  '@vueuse/core@11.3.0':
+    resolution: {integrity: sha512-7OC4Rl1f9G8IT6rUfi9JrKiXy4bfmHhZ5x2Ceojy0jnd3mHNEvV4JaRygH362ror6/NZ+Nl+n13LPzGiPN8cKA==}
+
   '@vueuse/core@12.8.2':
     resolution: {integrity: sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==}
 
@@ -4934,6 +4943,9 @@ packages:
   '@vueuse/metadata@10.11.1':
     resolution: {integrity: sha512-IGa5FXd003Ug1qAZmyE8wF3sJ81xGLSqTqtQ6jaVfkeZ4i5kS2mwQF61yhVqojRnenVew5PldLyRgvdl4YYuSw==}
 
+  '@vueuse/metadata@11.3.0':
+    resolution: {integrity: sha512-pwDnDspTqtTo2HwfLw4Rp6yywuuBdYnPYDq+mO38ZYKGebCUQC/nVj/PXSiK9HX5otxLz8Fn7ECPbjiRz2CC3g==}
+
   '@vueuse/metadata@12.8.2':
     resolution: {integrity: sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A==}
 
@@ -4950,6 +4962,9 @@ packages:
 
   '@vueuse/shared@10.11.1':
     resolution: {integrity: sha512-LHpC8711VFZlDaYUXEBbFBCQ7GS3dVU9mjOhhMhXP6txTV4EhYQg/KGnQuvt/sPAtoUKq7VVUnL6mVtFoL42sA==}
+
+  '@vueuse/shared@11.3.0':
+    resolution: {integrity: sha512-P8gSSWQeucH5821ek2mn/ciCk+MS/zoRKqdQIM3bHq6p7GXDAJLmnRRKmF5F65sAVJIfzQlwR3aDzwCn10s8hA==}
 
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
@@ -6234,6 +6249,11 @@ packages:
 
   ecdsa-sig-formatter@1.0.11:
     resolution: {integrity: sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==}
+
+  echarts-liquidfill@3.1.0:
+    resolution: {integrity: sha512-5Dlqs/jTsdTUAsd+K5LPLLTgrbbNORUSBQyk8PSy1Mg2zgHDWm83FmvA4s0ooNepCJojFYRITTQ4GU1UUSKYLw==}
+    peerDependencies:
+      echarts: ^5.0.1
 
   echarts@5.6.0:
     resolution: {integrity: sha512-oTbVTsXfKuEhxftHqL5xprgLoc0k7uScAwtryCgWF6hPYFLRwOUHiFmHGCBKP5NPFNkDVopOieyUqYGH8Fa3kA==}
@@ -8000,6 +8020,11 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
+
+  lucide-vue-next@0.436.0:
+    resolution: {integrity: sha512-cJuwwKpXCvB8pR+dc3iLdQ2TGrW2fJqrurMopeG2a7X7Nj5Aj3tvzOTJGVyhMoZ2QAeaw+SUtWWm3OkvD9Vh7Q==}
+    peerDependencies:
+      vue: ^3.5.13
 
   lucide-vue-next@0.507.0:
     resolution: {integrity: sha512-n0AZRmez4xq5vu5ZOfnrhC5wKBpu5tpwDHA6Ue2+sKyJv3USAPxqIerXLbdYbkHRW1tVZ3U9GE1MACsu6X/Z7Q==}
@@ -13143,6 +13168,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify/icons-mdi@1.2.48':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/json@2.2.334':
     dependencies:
       '@iconify/types': 2.0.0
@@ -13167,7 +13196,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@iconify/vue@5.0.0(vue@3.5.13(typescript@5.8.3))':
+  '@iconify/vue@4.3.0(vue@3.5.13(typescript@5.8.3))':
     dependencies:
       '@iconify/types': 2.0.0
       vue: 3.5.13(typescript@5.8.3)
@@ -14689,6 +14718,16 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
+  '@vueuse/core@11.3.0(vue@3.5.13(typescript@5.8.3))':
+    dependencies:
+      '@types/web-bluetooth': 0.0.20
+      '@vueuse/metadata': 11.3.0
+      '@vueuse/shared': 11.3.0(vue@3.5.13(typescript@5.8.3))
+      vue-demi: 0.14.10(vue@3.5.13(typescript@5.8.3))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
   '@vueuse/core@12.8.2(typescript@5.8.3)':
     dependencies:
       '@types/web-bluetooth': 0.0.21
@@ -14747,6 +14786,8 @@ snapshots:
 
   '@vueuse/metadata@10.11.1': {}
 
+  '@vueuse/metadata@11.3.0': {}
+
   '@vueuse/metadata@12.8.2': {}
 
   '@vueuse/metadata@13.1.0': {}
@@ -14768,6 +14809,13 @@ snapshots:
       - magicast
 
   '@vueuse/shared@10.11.1(vue@3.5.13(typescript@5.8.3))':
+    dependencies:
+      vue-demi: 0.14.10(vue@3.5.13(typescript@5.8.3))
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+      - vue
+
+  '@vueuse/shared@11.3.0(vue@3.5.13(typescript@5.8.3))':
     dependencies:
       vue-demi: 0.14.10(vue@3.5.13(typescript@5.8.3))
     transitivePeerDependencies:
@@ -16181,6 +16229,10 @@ snapshots:
   ecdsa-sig-formatter@1.0.11:
     dependencies:
       safe-buffer: 5.2.1
+
+  echarts-liquidfill@3.1.0(echarts@5.6.0):
+    dependencies:
+      echarts: 5.6.0
 
   echarts@5.6.0:
     dependencies:
@@ -18129,6 +18181,10 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
+
+  lucide-vue-next@0.436.0(vue@3.5.13(typescript@5.8.3)):
+    dependencies:
+      vue: 3.5.13(typescript@5.8.3)
 
   lucide-vue-next@0.507.0(vue@3.5.13(typescript@5.8.3)):
     dependencies:
